@@ -1,15 +1,230 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+// === Definisi Enum Berdasarkan Modul ===
+
+enum Role {
+  mahasiswa
+  admin
+}
+
+enum KursusLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum KursusStatus {
+  draft
+  published
+  archived
+}
+
+enum TipeKonten {
+  video
+  dokumen
+  latihan
+}
+
+enum EnrollmentStatus {
+  ongoing
+  completed
+  dropped
+}
+
+enum MentorStatus {
+  aktif
+  nonaktif
+}
+
+enum StatusProyek {
+  ideas
+  perencanaan
+  eksekusi
+  selesai
+}
+
+// === Model Entitas Aplikasi ===
+
+model Pengguna {
+  user_id       Int      @id @default(autoincrement())
+  email         String   @unique @db.VarChar(100)
+  password      String?   @db.VarChar(255)
+  nama_lengkap  String   @db.VarChar(100)
+  tanggal_lahir DateTime? @db.Date
+  nomor_telepon String?   @db.VarChar(15)
+  role          Role
+  
+  // Kolom yang disarankan NextAuth
+  emailVerified DateTime?
+  image         String?
+  
+  // Relasi 1-ke-1
+  mahasiswa     Mahasiswa?
+  administrator Administrator?
+  
+  // Relasi NextAuth
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Mahasiswa {
+  mahasiswa_id          Int      @id @default(autoincrement())
+  user_id               Int      @unique
+  nim                   String   @unique @db.VarChar(20)
+  institusi             String   @db.VarChar(100)
+  program_studi         String   @db.VarChar(100)
+  jumlah_kursus_selesai Int      @default(0)
+  foto_profil           String?  @db.VarChar(255)
+  
+  pengguna              Pengguna @relation(fields: [user_id], references: [user_id])
+  
+  // Relasi 1-ke-Banyak
+  threads               Thread[]
+  komentar              Komentar[]
+  proyekBisnis          ProyekBisnis[]
+  enrollments           Enrollment[]
+}
+
+model Administrator {
+  admin_id    Int      @id @default(autoincrement())
+  user_id     Int      @unique
+  nik         String   @unique @db.VarChar(20)
+  jabatan     String   @db.VarChar(50)
+  level_akses String   @db.VarChar(50)
+  
+  pengguna    Pengguna @relation(fields: [user_id], references: [user_id])
+
+  // Relasi 1-ke-Banyak
+  kursusDibuat   Kursus[]
+  mentorDikelola Mentor[]
+}
+
+model Kursus {
+  kursus_id    Int          @id @default(autoincrement())
+  judul        String       @db.VarChar(200)
+  deskripsi    String       @db.Text
+  kategori     String       @db.VarChar(50)
+  thumbnail    String?      @db.VarChar(255)
+  durasi_menit Int
+  level        KursusLevel
+  created_by   Int
+  status       KursusStatus
+
+  administrator Administrator @relation(fields: [created_by], references: [admin_id])
+  
+  // Relasi 1-ke-Banyak
+  enrollments   Enrollment[]
+  materi        Materi[]
+}
+
+model Materi {
+  materi_id    Int        @id @default(autoincrement())
+  kursus_id    Int
+  judul_materi String     @db.VarChar(200)
+  urutan       Int
+  tipe_konten  TipeKonten
+  url_konten   String     @db.VarChar(255)
+  durasi_menit Int?
+
+  kursus Kursus @relation(fields: [kursus_id], references: [kursus_id])
+}
+
+model Enrollment {
+  enrollment_id   Int              @id @default(autoincrement())
+  mahasiswa_id    Int
+  kursus_id       Int
+  tanggal_mulai   DateTime         @db.Timestamp()
+  tanggal_selesai DateTime?        @db.Timestamp()
+  progres_persen  Decimal          @default(0.00) @db.Decimal(5, 2)
+  status          EnrollmentStatus
+
+  mahasiswa Mahasiswa @relation(fields: [mahasiswa_id], references: [mahasiswa_id])
+  kursus    Kursus    @relation(fields: [kursus_id], references: [kursus_id])
+}
+
+model Mentor {
+  mentor_id    Int          @id @default(autoincrement())
+  nama         String       @db.VarChar(100)
+  bio          String       @db.Text
+  keahlian     String       @db.VarChar(255)
+  foto         String?      @db.VarChar(255)
+  email_kontak String       @db.VarChar(100)
+  linkedin     String?      @db.VarChar(255)
+  status       MentorStatus
+  created_by   Int
+  
+  administrator Administrator @relation(fields: [created_by], references: [admin_id])
+}
+
+model Thread {
+  thread_id       Int     @id @default(autoincrement())
+  mahasiswa_id    Int
+  judul           String  @db.VarChar(200)
+  isi             String  @db.Text
+  jumlah_views    Int     @default(0)
+  jumlah_komentar Int     @default(0)
+
+  mahasiswa Mahasiswa @relation(fields: [mahasiswa_id], references: [mahasiswa_id])
+  
+  // Relasi 1-ke-Banyak
+  komentar  Komentar[]
+}
+
+model Komentar {
+  komentar_id    Int      @id @default(autoincrement())
+  thread_id      Int
+  mahasiswa_id   Int
+  isi_komentar   String   @db.Text
+  tanggal_dibuat DateTime @db.Timestamp()
+
+  thread    Thread    @relation(fields: [thread_id], references: [thread_id])
+  mahasiswa Mahasiswa @relation(fields: [mahasiswa_id], references: [mahasiswa_id])
+}
+
+model ProyekBisnis {
+  proyek_id     Int          @id @default(autoincrement())
+  mahasiswa_id  Int
+  nama_proyek   String       @db.VarChar(200)
+  deskripsi     String?      @db.Text
+  status_proyek StatusProyek
+  dokumen       String?      @db.VarChar(255)
+
+  mahasiswa Mahasiswa @relation(fields: [mahasiswa_id], references: [mahasiswa_id])
+}
+
+// === Model Wajib untuk NextAuth.js PrismaAdapter ===
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user Pengguna @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  
+  user Pengguna @relation(fields: [userId], references: [user_id], onDelete: Cascade)
 }
