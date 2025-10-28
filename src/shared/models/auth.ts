@@ -33,7 +33,7 @@ declare module "next-auth/jwt" {
    * Tipe 'JWT' ini adalah apa yang ada di dalam
    * token JWT (parameter `token` di callbacks).
    */
-  interface JWT extends DefaultJWT {
+  interface JWT {
     id: string;
     role: Role;
     mahasiswaId?: number | null;
