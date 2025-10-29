@@ -99,10 +99,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user, account }) {
-      // Saat pertama kali login (provider Credentials atau Google)
-      // 'user' adalah objek yang dikembalikan dari 'authorize' atau profil Google
       if (user) {
-        // Ambil data terbaru dari DB untuk memastikan role-nya benar
         const dbUser = await prisma.pengguna.findUnique({
           where: { email: user.email! },
           include: {
@@ -112,8 +109,6 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (dbUser) {
-          // Tipe 'token' sekarang cocok dengan 'JWT'
-          // yang kita definisikan di next-auth.d.ts
           token.id = dbUser.user_id.toString();
           token.role = dbUser.role;
           token.mahasiswaId = dbUser.mahasiswa?.mahasiswa_id;
@@ -124,9 +119,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      // 'session.user' dan 'token' sekarang memiliki tipe yang benar
       if (session.user && token) {
-        // HAPUS '(session.user as any)'
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.mahasiswaId = token.mahasiswaId;

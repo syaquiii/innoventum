@@ -3,6 +3,7 @@
 export default function HomePage() {
   return (
     <div
+      className="font-poppins"
       style={{
         padding: "2rem 0",
         textAlign: "center",
@@ -30,7 +31,6 @@ export default function HomePage() {
         <br />
         Silakan mulai menjelajahi fitur atau pilih menu di atas.
       </p>
-      {/* Tambahkan konten utama beranda di sini */}
     </div>
   );
 }
