@@ -1,5 +1,6 @@
 "use client";
 
+import { ErrorPopup } from "@/shared/components/popup/error";
 import { LoginForm } from "../components/Form";
 import { useLogin } from "../hooks/useLogin";
 
@@ -27,7 +28,6 @@ export default function LoginContainer() {
       <LoginForm
         email={email}
         password={password}
-        error={error}
         isLoading={isLoading}
         onEmailChange={setEmail}
         onPasswordChange={setPassword}
@@ -35,6 +35,8 @@ export default function LoginContainer() {
         fieldErrors={fieldErrors}
         onGoogleSignIn={handleGoogleSignIn}
       />
+
+      <ErrorPopup error={error} />
     </div>
   );
 }

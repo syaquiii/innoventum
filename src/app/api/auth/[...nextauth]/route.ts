@@ -1,5 +1,4 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-// HAPUS baris ini: import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "@/lib/prisma";
@@ -7,8 +6,6 @@ import bcrypt from "bcrypt";
 import { Role } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
-  // HAPUS baris ini: adapter: PrismaAdapter(prisma),
-
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -34,29 +31,38 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
-        if (!user || !user.password) {
-          throw new Error("Email atau password salah");
+        // 1. Cek dulu apakah email-nya ada
+        if (!user) {
+          throw new Error("Email ini tidak terdaftar.");
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        // 2. PERBAIKAN: Cek jika user punya password (dibuat via credentials)
+        if (user.password) {
+          // 3. Jika ada password, baru bandingkan
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password // Sekarang aman, ini pasti string
+          );
 
-        if (!isPasswordValid) {
-          throw new Error("Email atau password salah");
+          if (!isPasswordValid) {
+            throw new Error("Password yang Anda masukkan salah.");
+          }
+
+          // 4. Jika lolos, return user
+          return {
+            id: user.user_id.toString(),
+            email: user.email,
+            name: user.nama_lengkap,
+            role: user.role,
+            mahasiswaId: user.mahasiswa?.mahasiswa_id,
+            adminId: user.administrator?.admin_id,
+          };
+        } else {
+          // 5. Jika user ada tapi password-nya null (dibuat via Google)
+          throw new Error(
+            "Akun ini terdaftar via Google. Silakan login pakai Google."
+          );
         }
-
-        // Tipe kembalian ini sekarang cocok dengan 'User'
-        // yang kita definisikan di next-auth.d.ts
-        return {
-          id: user.user_id.toString(),
-          email: user.email,
-          name: user.nama_lengkap,
-          role: user.role,
-          mahasiswaId: user.mahasiswa?.mahasiswa_id,
-          adminId: user.administrator?.admin_id,
-        };
       },
     }),
   ],
@@ -66,7 +72,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile: _profile }) {
       if (account?.provider === "google") {
         try {
           const existingUser = await prisma.pengguna.findUnique({
@@ -74,14 +80,11 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!existingUser) {
-            // PERBAIKAN BUG:
-            // Pastikan schema.prisma Anda mengizinkan password,
-            // tanggal_lahir, dan nomor_telepon menjadi opsional (null)
             await prisma.pengguna.create({
               data: {
                 email: user.email!,
                 nama_lengkap: user.name || "",
-                password: null, // Jangan "" (string kosong), tapi null
+                password: null, // Google tidak punya password
                 tanggal_lahir: null, // Google tidak menyediakan ini
                 nomor_telepon: null, // Google tidak menyediakan ini
                 role: Role.mahasiswa,
@@ -98,7 +101,7 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account: _account }) {
       if (user) {
         const dbUser = await prisma.pengguna.findUnique({
           where: { email: user.email! },
@@ -131,7 +134,7 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: "/login",
-    error: "/login",
+    error: "/login", // Jika error (misal password salah), kembali ke /login
   },
 
   secret: process.env.NEXTAUTH_SECRET,
