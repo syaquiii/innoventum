@@ -2,7 +2,7 @@ export const navList = [
   {
     id: "beranda",
     label: "Beranda",
-    href: "/beranda",
+    href: "/home",
   },
   {
     id: "kelas",
