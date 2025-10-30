@@ -1,6 +1,6 @@
 "use client";
 
-import { ErrorPopup } from "@/shared/components/popup/error";
+import { Popup } from "@/shared/components/popup/NotificationPopup";
 import { LoginForm } from "../components/Form";
 import { useLogin } from "../hooks/useLogin";
 
@@ -35,8 +35,7 @@ export default function LoginContainer() {
         fieldErrors={fieldErrors}
         onGoogleSignIn={handleGoogleSignIn}
       />
-
-      <ErrorPopup error={error} />
+      <Popup variant="error" message={error} />
     </div>
   );
 }

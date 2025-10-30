@@ -1,6 +1,6 @@
 "use client";
 
-import { ErrorPopup } from "@/shared/components/popup/error";
+import { Popup } from "../../../../shared/components/popup/NotificationPopup";
 import { RegisterForm } from "../components/Form";
 import { useRegister } from "../hooks/useRegister";
 
@@ -35,8 +35,8 @@ export default function RegisterContainer() {
             onSubmit={handleSubmit}
             onGoogleSignIn={handleGoogleSignIn}
           />
-          <ErrorPopup error={error} duration={3000} />
         </div>
+        <Popup message={error} variant="error" />
       </div>
     </div>
   );
