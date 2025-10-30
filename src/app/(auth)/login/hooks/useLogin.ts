@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+// 1. Impor getSession
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "../zod/validation";
 
@@ -52,7 +53,15 @@ export function useLogin() {
       if (result?.error) {
         setError(result.error);
       } else if (result?.ok) {
-        router.push("/home");
+        // 2. Login berhasil, panggil getSession()
+        // Ini akan mengambil data sesi terbaru (termasuk role).
+        const session = await getSession();
+        // 3. Lakukan redirect berdasarkan role
+        if (session?.user?.role === "admin") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/home");
+        }
       }
     } finally {
       setIsLoading(false);
