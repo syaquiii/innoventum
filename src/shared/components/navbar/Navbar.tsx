@@ -4,14 +4,15 @@ import { Button } from "@/components/ui/button";
 import { navList } from "./data/navlist";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import { useAuth } from "@/shared/hooks/useAuth";
+import ProfileDropdown from "./ProfileDropdown";
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const { status, session, profile } = useAuth();
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -54,7 +55,6 @@ const Navbar = () => {
             </li>
           ))}
 
-          {/* 4. Logika untuk tombol auth */}
           <div className="flex items-center gap-4">
             {status === "loading" && (
               <div className="h-10 w-24 rounded-md bg-gray-200 animate-pulse" />
@@ -71,17 +71,7 @@ const Navbar = () => {
               </Link>
             )}
 
-            {status === "authenticated" && (
-              <>
-                <Button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  variant="normal"
-                  className="transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-normal hover:text-white"
-                >
-                  Logout
-                </Button>
-              </>
-            )}
+            {status === "authenticated" && <ProfileDropdown />}
           </div>
         </ul>
       </div>
