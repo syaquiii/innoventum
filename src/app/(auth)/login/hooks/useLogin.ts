@@ -17,7 +17,7 @@ export function useLogin() {
   const router = useRouter();
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/dasbor" });
+    signIn("google", { callbackUrl: "/home" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +52,7 @@ export function useLogin() {
       if (result?.error) {
         setError(result.error);
       } else if (result?.ok) {
-        router.push("/dasbor");
+        router.push("/home");
       }
     } finally {
       setIsLoading(false);
