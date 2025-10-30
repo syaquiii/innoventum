@@ -28,7 +28,7 @@
   --color-ourgreen: #c7ff9f;
 }
 @utility mycontainer {
-  @apply container  max-w-7xl w-full mx-auto lg:px-10 xl:px-0;
+  @apply container  max-w-7xl w-full mx-auto md:px-10 xl:px-0;
 }
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
