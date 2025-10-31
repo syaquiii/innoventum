@@ -25,11 +25,15 @@ export default function AdminSidebarLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const handleLogout = () => {
-    signOut({ callbackUrl: "/login" }); // Arahkan ke /login setelah logout
+    signOut({ callbackUrl: "/login" });
   };
   const menuItems = [
-    // ... (menuItems Anda tetap sama, tidak perlu diubah)
-    { icon: Home, label: "Dashboard", href: "/admin", hasSubmenu: false },
+    {
+      icon: Home,
+      label: "Dashboard",
+      href: "/admin/dashboard",
+      hasSubmenu: false,
+    },
     {
       icon: Users,
       label: "Pengguna",
@@ -253,7 +257,7 @@ export default function AdminSidebarLayout({
       <main
         className={`${
           isCollapsed ? "ml-20" : "ml-64"
-        } transition-all duration-300 min-h-screen`}
+        } transition-all duration-300 min-h-screen bg-light py-24 px-12`}
       >
         {children}
       </main>

@@ -90,7 +90,7 @@ export function Popup({
         }
       `}</style>
 
-      <div className="fixed top-4 right-4 z-50 pointer-events-none">
+      <div className="fixed top-4 right-4 z-99999 pointer-events-none">
         <div
           className={`pointer-events-auto w-80 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-sm border ${
             config.border
