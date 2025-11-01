@@ -1,13 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client", "@prisma/engines"],
+  serverExternalPackages: ["@prisma/client", "@prisma/engines"],
+
+  turbopack: {
+    // Turbopack config jika diperlukan nanti
   },
-  webpack: (config, { isServer }) => {
+
+  // Webpack hanya untuk production build (jika butuh)
+  webpack: (config, { isServer, webpack }) => {
     if (isServer) {
       config.externals = config.externals || [];
-      config.externals.push("@prisma/client", "@prisma/engines");
+      if (Array.isArray(config.externals)) {
+        config.externals.push("@prisma/client", "@prisma/engines");
+      }
     }
     return config;
   },
