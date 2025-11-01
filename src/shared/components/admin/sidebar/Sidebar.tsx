@@ -39,11 +39,7 @@ export default function AdminSidebarLayout({
       label: "Pengguna",
       href: "/admin/pengguna",
       hasSubmenu: true,
-      submenu: [
-        { label: "Semua Pengguna", href: "/admin/pengguna" },
-        { label: "Mahasiswa", href: "/admin/mahasiswa" },
-        { label: "Administrator", href: "/admin/administrator" },
-      ],
+      submenu: [{ label: "Semua Pengguna", href: "/admin/pengguna" }],
     },
     {
       icon: BookOpen,
