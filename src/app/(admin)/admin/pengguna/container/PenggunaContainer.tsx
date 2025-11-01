@@ -47,6 +47,7 @@ import {
   UserFilters,
   UpdateUserData,
 } from "../hooks/useAdminPengguna";
+import { Popup } from "@/shared/components/popup/NotificationPopup";
 
 export default function AdminUsersPage() {
   const [filters, setFilters] = useState<UserFilters>({
@@ -57,6 +58,12 @@ export default function AdminUsersPage() {
   });
   const [searchInput, setSearchInput] = useState("");
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
+
+  // State untuk notification popup
+  const [notification, setNotification] = useState<{
+    message: string;
+    variant: "success" | "error";
+  } | null>(null);
 
   // State untuk modal edit
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -92,6 +99,16 @@ export default function AdminUsersPage() {
       deleteMutation.mutate(userToDelete, {
         onSuccess: () => {
           setUserToDelete(null);
+          setNotification({
+            message: "Pengguna berhasil dihapus",
+            variant: "success",
+          });
+        },
+        onError: (error: Error) => {
+          setNotification({
+            message: error.message || "Gagal menghapus pengguna",
+            variant: "error",
+          });
         },
       });
     }
@@ -204,9 +221,16 @@ export default function AdminUsersPage() {
       {
         onSuccess: () => {
           handleCloseEditModal();
+          setNotification({
+            message: "Data pengguna berhasil diperbarui",
+            variant: "success",
+          });
         },
-        onError: (error) => {
-          console.error("Failed to update user:", error);
+        onError: (error: Error) => {
+          setNotification({
+            message: error.message || "Gagal memperbarui data pengguna",
+            variant: "error",
+          });
         },
       }
     );
@@ -276,6 +300,14 @@ export default function AdminUsersPage() {
 
   return (
     <div className="container mx-auto py-10">
+      {/* Popup Notification */}
+      <Popup
+        message={notification?.message}
+        variant={notification?.variant}
+        onClose={() => setNotification(null)}
+        duration={5000}
+      />
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Manajemen Pengguna</h1>
         <p className="text-muted-foreground mt-2">
