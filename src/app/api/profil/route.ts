@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route"; // Pastikan path ini benar
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma"; // <-- 1. Gunakan prisma singleton
 import { Prisma } from "@prisma/client";
 import { profileSchema } from "./zod/profile";
+import { authOptions } from "@/lib/auth";
 
 // Hapus: import { PrismaClient } from "@prisma/client";
 // Hapus: const prisma = new PrismaClient();

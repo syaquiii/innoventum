@@ -88,7 +88,7 @@ export function LoginForm({
       {error && <p className="text-destructive text-sm">{error}</p>}
       <div className="space-y-4 mt-8">
         <Button
-          variant="light"
+          variant="default"
           type="submit"
           disabled={isLoading}
           className="w-full font-semibold text-base h-12 shadow-lg hover:shadow-xl transition-all duration-200"
