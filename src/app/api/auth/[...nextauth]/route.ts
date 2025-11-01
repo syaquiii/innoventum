@@ -31,24 +31,20 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
-        // 1. Cek dulu apakah email-nya ada
         if (!user) {
           throw new Error("Email ini tidak terdaftar.");
         }
 
-        // 2. PERBAIKAN: Cek jika user punya password (dibuat via credentials)
         if (user.password) {
-          // 3. Jika ada password, baru bandingkan
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
-            user.password // Sekarang aman, ini pasti string
+            user.password
           );
 
           if (!isPasswordValid) {
             throw new Error("Password yang Anda masukkan salah.");
           }
 
-          // 4. Jika lolos, return user
           return {
             id: user.user_id.toString(),
             email: user.email,
@@ -58,7 +54,6 @@ export const authOptions: NextAuthOptions = {
             adminId: user.administrator?.admin_id,
           };
         } else {
-          // 5. Jika user ada tapi password-nya null (dibuat via Google)
           throw new Error(
             "Akun ini terdaftar via Google. Silakan login pakai Google."
           );
@@ -68,11 +63,13 @@ export const authOptions: NextAuthOptions = {
   ],
 
   session: {
-    strategy: "jwt", // Pakai JWT, bukan database session
+    strategy: "jwt",
   },
 
   callbacks: {
     async signIn({ user, account, profile: _profile }) {
+      console.log("🔐 SignIn attempt:", account?.provider, user.email);
+
       if (account?.provider === "google") {
         try {
           const existingUser = await prisma.pengguna.findUnique({
@@ -80,24 +77,51 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!existingUser) {
+            console.log("Creating new user:", user.email);
+
             await prisma.pengguna.create({
               data: {
                 email: user.email!,
                 nama_lengkap: user.name || "",
-                password: null, // Google tidak punya password
-                tanggal_lahir: null, // Google tidak menyediakan ini
-                nomor_telepon: null, // Google tidak menyediakan ini
+                password: null,
+                tanggal_lahir: null,
+                nomor_telepon: null,
                 role: Role.mahasiswa,
                 emailVerified: new Date(),
                 image: user.image,
               },
             });
+
+            console.log("✅ User created successfully");
+          } else {
+            console.log("✅ User already exists, allowing signin");
           }
+
+          // PERBAIKAN: Return true di sini kalau sukses
+          return true;
         } catch (error) {
-          console.error("Error creating user:", error);
+          console.error("❌ Error in signIn callback:", error);
+
+          // PERBAIKAN: Double-check apakah user sebenarnya sudah ada
+          try {
+            const existingUser = await prisma.pengguna.findUnique({
+              where: { email: user.email! },
+            });
+
+            if (existingUser) {
+              console.log("⚠️ User exists despite error, allowing signin");
+              return true;
+            }
+          } catch (checkError) {
+            console.error("Failed to check user existence:", checkError);
+          }
+
+          // Hanya return false kalau benar-benar gagal
+          console.error("🚫 Blocking signin due to critical error");
           return false;
         }
       }
+
       return true;
     },
 
@@ -134,7 +158,7 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: "/login",
-    error: "/login", // Jika error (misal password salah), kembali ke /login
+    error: "/login",
   },
 
   secret: process.env.NEXTAUTH_SECRET,
