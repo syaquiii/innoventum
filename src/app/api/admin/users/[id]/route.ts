@@ -48,6 +48,7 @@ export async function GET(
 }
 
 // PATCH - Update user
+// PATCH - Update user
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -59,11 +60,9 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Await params karena sudah Promise di Next.js 15+
     const resolvedParams = await params;
     const userId = parseInt(resolvedParams.id);
 
-    // Validasi jika ID bukan angka
     if (isNaN(userId)) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
@@ -75,6 +74,7 @@ export async function PATCH(
       nama_lengkap,
       tanggal_lahir,
       nomor_telepon,
+      role, // ⭐ TAMBAHKAN INI
       // Mahasiswa fields
       nim,
       institusi,
@@ -99,52 +99,120 @@ export async function PATCH(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // ⭐ PERBAIKAN: Deteksi perubahan role
+    const isRoleChanged = role && role !== existingUser.role;
+
     // Update user data
     const updateData: Prisma.PenggunaUpdateInput = {
-      // Hanya update field jika nilainya ada (bukan undefined)
       ...(email !== undefined && { email }),
       ...(nama_lengkap !== undefined && { nama_lengkap }),
       ...(tanggal_lahir !== undefined && {
         tanggal_lahir: tanggal_lahir ? new Date(tanggal_lahir) : null,
       }),
       ...(nomor_telepon !== undefined && { nomor_telepon }),
+      ...(role !== undefined && { role }), // ⭐ TAMBAHKAN INI
     };
 
-    // Update role-specific data
-    if (existingUser.role === "mahasiswa" && existingUser.mahasiswa) {
-      const mahasiswaUpdate: Prisma.MahasiswaUpdateInput = {};
-      if (nim !== undefined) mahasiswaUpdate.nim = nim;
-      if (institusi !== undefined) mahasiswaUpdate.institusi = institusi;
-      if (program_studi !== undefined)
-        mahasiswaUpdate.program_studi = program_studi;
-      if (foto_profil !== undefined) mahasiswaUpdate.foto_profil = foto_profil;
+    // ⭐ PERBAIKAN: Gunakan transaction untuk perubahan role
+    let updatedUser;
 
-      if (Object.keys(mahasiswaUpdate).length > 0) {
-        updateData.mahasiswa = {
-          update: mahasiswaUpdate,
-        };
-      }
-    } else if (existingUser.role === "admin" && existingUser.administrator) {
-      const adminUpdate: Prisma.AdministratorUpdateInput = {};
-      if (nik !== undefined) adminUpdate.nik = nik;
-      if (jabatan !== undefined) adminUpdate.jabatan = jabatan;
-      if (level_akses !== undefined) adminUpdate.level_akses = level_akses;
+    if (isRoleChanged) {
+      // Gunakan transaction untuk memastikan atomicity
+      updatedUser = await prisma.$transaction(async (tx) => {
+        // 1. Hapus relasi lama
+        if (existingUser.role === "mahasiswa" && existingUser.mahasiswa) {
+          await tx.mahasiswa.delete({
+            where: { user_id: userId },
+          });
+        } else if (
+          existingUser.role === "admin" &&
+          existingUser.administrator
+        ) {
+          await tx.administrator.delete({
+            where: { user_id: userId },
+          });
+        }
 
-      if (Object.keys(adminUpdate).length > 0) {
-        updateData.administrator = {
-          update: adminUpdate,
-        };
+        // 2. Update user dengan role baru
+        const updated = await tx.pengguna.update({
+          where: { user_id: userId },
+          data: updateData,
+        });
+
+        // 3. Buat relasi baru sesuai role baru
+        if (role === "mahasiswa") {
+          await tx.mahasiswa.create({
+            data: {
+              user_id: userId,
+              nim: nim || "",
+              institusi: institusi || "",
+              program_studi: program_studi || "",
+              jumlah_kursus_selesai: 0,
+              foto_profil: foto_profil || null,
+            },
+          });
+        } else if (role === "admin") {
+          await tx.administrator.create({
+            data: {
+              user_id: userId,
+              nik: nik || "",
+              jabatan: jabatan || "",
+              level_akses: level_akses || "terbatas",
+            },
+          });
+        }
+
+        // 4. Fetch hasil akhir dengan relasi
+        return tx.pengguna.findUnique({
+          where: { user_id: userId },
+          include: {
+            mahasiswa: true,
+            administrator: true,
+          },
+        });
+      });
+    } else {
+      // ⭐ Jika role TIDAK berubah, update relasi yang ada seperti biasa
+      if (existingUser.role === "mahasiswa" && existingUser.mahasiswa) {
+        const mahasiswaUpdate: Prisma.MahasiswaUpdateInput = {};
+        if (nim !== undefined) mahasiswaUpdate.nim = nim;
+        if (institusi !== undefined) mahasiswaUpdate.institusi = institusi;
+        if (program_studi !== undefined)
+          mahasiswaUpdate.program_studi = program_studi;
+        if (foto_profil !== undefined)
+          mahasiswaUpdate.foto_profil = foto_profil;
+
+        if (Object.keys(mahasiswaUpdate).length > 0) {
+          updateData.mahasiswa = {
+            update: mahasiswaUpdate,
+          };
+        }
+      } else if (existingUser.role === "admin" && existingUser.administrator) {
+        const adminUpdate: Prisma.AdministratorUpdateInput = {};
+        if (nik !== undefined) adminUpdate.nik = nik;
+        if (jabatan !== undefined) adminUpdate.jabatan = jabatan;
+        if (level_akses !== undefined) adminUpdate.level_akses = level_akses;
+
+        if (Object.keys(adminUpdate).length > 0) {
+          updateData.administrator = {
+            update: adminUpdate,
+          };
+        }
       }
+
+      updatedUser = await prisma.pengguna.update({
+        where: { user_id: userId },
+        data: updateData,
+        include: {
+          mahasiswa: true,
+          administrator: true,
+        },
+      });
     }
 
-    const updatedUser = await prisma.pengguna.update({
-      where: { user_id: userId },
-      data: updateData,
-      include: {
-        mahasiswa: true,
-        administrator: true,
-      },
-    });
+    if (!updatedUser) {
+      throw new Error("Failed to update user");
+    }
 
     return NextResponse.json({
       message: "User updated successfully",
