@@ -35,7 +35,15 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, Edit, Trash2, Loader2, Plus, BookOpen } from "lucide-react";
+import {
+  Search,
+  Edit,
+  Trash2,
+  Loader2,
+  Plus,
+  BookOpen,
+  List,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -51,6 +59,7 @@ import {
   UpdateKursusData,
 } from "../hooks/useAdminKursus";
 import { Popup } from "@/shared/components/popup/NotificationPopup";
+import MateriContainer from "./MateriContainer";
 
 export default function AdminKursusPage() {
   const [filters, setFilters] = useState<KursusFilters>({
@@ -88,6 +97,10 @@ export default function AdminKursusPage() {
     level: "beginner",
     status: "draft",
   });
+
+  // State untuk modal materi
+  const [isMateriModalOpen, setIsMateriModalOpen] = useState(false);
+  const [selectedKursusId, setSelectedKursusId] = useState<number | null>(null);
 
   const { data, isLoading, isError } = useAdminKursus(filters);
   const deleteMutation = useDeleteKursus();
@@ -130,7 +143,7 @@ export default function AdminKursusPage() {
     setFilters({ ...filters, page: newPage });
   };
 
-  // Lengkap: Handler hapus, include dialog konfirmasi & pemanggilan mutate
+  // Handler hapus
   const handleDelete = () => {
     if (kursusToDelete) {
       deleteMutation.mutate(kursusToDelete, {
@@ -187,6 +200,17 @@ export default function AdminKursusPage() {
       level: "beginner",
       status: "draft",
     });
+  };
+
+  // Handler untuk modal materi
+  const handleOpenMateriModal = (kursusId: number) => {
+    setSelectedKursusId(kursusId);
+    setIsMateriModalOpen(true);
+  };
+
+  const handleCloseMateriModal = () => {
+    setIsMateriModalOpen(false);
+    setSelectedKursusId(null);
   };
 
   // Handler untuk perubahan form edit
@@ -254,7 +278,7 @@ export default function AdminKursusPage() {
     }));
   };
 
-  // Handler submit edit, validasi & update
+  // Handler submit edit
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!kursusToEditId) return;
@@ -300,7 +324,7 @@ export default function AdminKursusPage() {
     );
   };
 
-  // Handler submit create, validasi & create
+  // Handler submit create
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -349,7 +373,7 @@ export default function AdminKursusPage() {
     return <Badge variant={item.variant as any}>{item.label}</Badge>;
   };
 
-  // Helper untuk mengambil nilai field edit form (perkaya, auto fallback dari detail kursus)
+  // Helper untuk mengambil nilai field edit form
   const getEditFormValue = (field: keyof UpdateKursusData): any => {
     if (editFormData[field] !== undefined) {
       return editFormData[field];
@@ -492,6 +516,14 @@ export default function AdminKursusPage() {
                   <TableCell>{kursus._count.materi}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleOpenMateriModal(kursus.kursus_id)}
+                        title="Kelola Materi"
+                      >
+                        <List className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
@@ -896,6 +928,21 @@ export default function AdminKursusPage() {
               </DialogFooter>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Kelola Materi */}
+      <Dialog open={isMateriModalOpen} onOpenChange={handleCloseMateriModal}>
+        <DialogContent className="max-w-[60vw]!  w-full max-h-[90vh] overflow-hidden p-0">
+          <DialogTitle className="sr-only">Materi Kursus</DialogTitle>
+          <div className="p-6 overflow-y-auto max-h-[90vh]">
+            {selectedKursusId && (
+              <MateriContainer
+                kursusId={selectedKursusId}
+                onClose={handleCloseMateriModal}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
