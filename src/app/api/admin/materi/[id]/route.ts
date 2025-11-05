@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,11 +14,10 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Await params seperti yang disarankan oleh error
-    const resolvedParams = await params;
+    const { id } = await context.params;
 
     // Validasi ID
-    const materiId = parseInt(resolvedParams.id); // Gunakan resolvedParams
+    const materiId = parseInt(id);
     if (isNaN(materiId)) {
       return NextResponse.json(
         { error: "Invalid Materi ID format" },
@@ -27,7 +26,7 @@ export async function GET(
     }
 
     const materi = await prisma.materi.findUnique({
-      where: { materi_id: materiId }, // Gunakan ID yang sudah divalidasi
+      where: { materi_id: materiId },
       include: {
         kursus: {
           select: {
@@ -58,7 +57,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -66,11 +65,10 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Await params seperti yang disarankan oleh error
-    const resolvedParams = await params;
+    const { id } = await context.params;
 
     // Validasi ID
-    const materiId = parseInt(resolvedParams.id); // Gunakan resolvedParams
+    const materiId = parseInt(id);
     if (isNaN(materiId)) {
       return NextResponse.json(
         { error: "Invalid Materi ID format" },
@@ -90,7 +88,7 @@ export async function PATCH(
 
     // Cek apakah materi exists
     const existingMateri = await prisma.materi.findUnique({
-      where: { materi_id: materiId }, // Gunakan ID yang sudah divalidasi
+      where: { materi_id: materiId },
     });
 
     if (!existingMateri) {
@@ -103,7 +101,7 @@ export async function PATCH(
         where: {
           kursus_id: kursus_id ? parseInt(kursus_id) : existingMateri.kursus_id,
           urutan: parseInt(urutan),
-          materi_id: { not: materiId }, // Gunakan ID yang sudah divalidasi
+          materi_id: { not: materiId },
         },
       });
 
@@ -116,7 +114,7 @@ export async function PATCH(
     }
 
     const updatedMateri = await prisma.materi.update({
-      where: { materi_id: materiId }, // Gunakan ID yang sudah divalidasi
+      where: { materi_id: materiId },
       data: {
         ...(kursus_id && { kursus_id: parseInt(kursus_id) }),
         ...(judul_materi && { judul_materi }),
@@ -154,7 +152,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -162,11 +160,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Await params seperti yang disarankan oleh error
-    const resolvedParams = await params;
+    const { id } = await context.params;
 
     // Validasi ID
-    const materiId = parseInt(resolvedParams.id); // Gunakan resolvedParams
+    const materiId = parseInt(id);
     if (isNaN(materiId)) {
       return NextResponse.json(
         { error: "Invalid Materi ID format" },
@@ -175,7 +172,7 @@ export async function DELETE(
     }
 
     const materi = await prisma.materi.findUnique({
-      where: { materi_id: materiId }, // Gunakan ID yang sudah divalidasi
+      where: { materi_id: materiId },
     });
 
     if (!materi) {
@@ -183,7 +180,7 @@ export async function DELETE(
     }
 
     await prisma.materi.delete({
-      where: { materi_id: materiId }, // Gunakan ID yang sudah divalidasi
+      where: { materi_id: materiId },
     });
 
     return NextResponse.json({
