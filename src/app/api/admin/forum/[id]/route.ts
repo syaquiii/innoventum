@@ -6,10 +6,11 @@ import prisma from "@/lib/prisma";
 // GET - Detail thread dengan komentar
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const threadId = parseInt(params.id);
+    const { id } = await context.params;
+    const threadId = parseInt(id);
 
     if (isNaN(threadId)) {
       return NextResponse.json(
@@ -78,7 +79,7 @@ export async function GET(
 // PUT - Update thread
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -90,7 +91,8 @@ export async function PUT(
       );
     }
 
-    const threadId = parseInt(params.id);
+    const { id } = await context.params;
+    const threadId = parseInt(id);
 
     if (isNaN(threadId)) {
       return NextResponse.json(
@@ -169,7 +171,7 @@ export async function PUT(
 // DELETE - Hapus thread
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -181,7 +183,8 @@ export async function DELETE(
       );
     }
 
-    const threadId = parseInt(params.id);
+    const { id } = await context.params;
+    const threadId = parseInt(id);
 
     if (isNaN(threadId)) {
       return NextResponse.json(
