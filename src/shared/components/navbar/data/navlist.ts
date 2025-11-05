@@ -19,4 +19,9 @@ export const navList = [
     label: "Diskusi",
     href: "/diskusi",
   },
+  {
+    id: "proyek",
+    label: "proyek",
+    href: "/proyek",
+  },
 ];
