@@ -22,7 +22,8 @@ function getIdFromRequest(req: NextRequest): number | null {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } } // Keep signature for type safety, but don't rely on it
+  // FIX: Mengubah tipe params agar sesuai dengan validator Next.js
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -81,7 +82,8 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } } // Keep signature for type safety
+  // FIX: Mengubah tipe params agar sesuai dengan validator Next.js
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -153,7 +155,8 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } } // Keep signature for type safety
+  // FIX: Mengubah tipe params agar sesuai dengan validator Next.js
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
