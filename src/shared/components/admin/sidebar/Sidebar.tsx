@@ -68,18 +68,6 @@ export default function AdminSidebarLayout({
       href: "/admin/proyek",
       hasSubmenu: false,
     },
-    {
-      icon: BarChart3,
-      label: "Laporan",
-      href: "/admin/laporan",
-      hasSubmenu: false,
-    },
-    {
-      icon: Settings,
-      label: "Pengaturan",
-      href: "/admin/pengaturan",
-      hasSubmenu: false,
-    },
   ];
 
   const toggleSubmenu = (label: string) => {
