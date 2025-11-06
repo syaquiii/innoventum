@@ -18,6 +18,8 @@ import Image from "next/image";
 import Logo from "@/shared/assets/logo/logo-putih.png";
 import icon from "@/app/favicon.ico";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { usePathname } from "next/navigation";
+
 interface AdminSidebarLayoutProps {
   children: ReactNode;
 }
@@ -25,12 +27,15 @@ interface AdminSidebarLayoutProps {
 export default function AdminSidebarLayout({
   children,
 }: AdminSidebarLayoutProps) {
-  const { profile } = useAuth();
+  const { session } = useAuth();
+  const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+
   const handleLogout = () => {
     signOut({ callbackUrl: "/login" });
   };
+
   const menuItems = [
     {
       icon: Home,
@@ -79,6 +84,28 @@ export default function AdminSidebarLayout({
     setExpandedMenu(expandedMenu === label ? null : label);
   };
 
+  // Determine active state for menu and submenu
+  function isMenuItemActive(item: {
+    href: string;
+    hasSubmenu?: boolean;
+    submenu?: { href: string }[];
+  }): boolean {
+    // Sidebar menu is active if pathname startsWith its href (for list navigation pattern)
+    // Special case for /admin/forum: also check child routes for submenu
+    if (item.hasSubmenu && item.submenu) {
+      // If any submenu's href is a prefix of pathname, highlight the Forum too
+      return (
+        pathname.startsWith(item.href) ||
+        item.submenu.some((sub) => pathname.startsWith(sub.href))
+      );
+    }
+    return pathname.startsWith(item.href);
+  }
+
+  function isSubmenuItemActive(subitem: { href: string }): boolean {
+    return pathname.startsWith(subitem.href);
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -112,64 +139,80 @@ export default function AdminSidebarLayout({
           {/* Navigation Menu */}
           <nav className="flex-1 overflow-y-auto py-6 px-3">
             <ul className="space-y-2">
-              {menuItems.map((item) => (
-                <li key={item.label}>
-                  <div>
-                    <a
-                      href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2.5 text-white/80 hover:text-white hover:bg-dark-hover rounded-lg transition-all group ${
-                        isCollapsed ? "justify-center" : ""
-                      }`}
-                      onClick={(e) => {
-                        if (item.hasSubmenu && !isCollapsed) {
-                          e.preventDefault();
-                          toggleSubmenu(item.label);
-                        }
-                      }}
-                      title={isCollapsed ? item.label : ""}
-                    >
-                      <item.icon size={20} className="flex-shrink-0" />
-                      {!isCollapsed && (
-                        <>
-                          <span className="flex-1 text-sm font-medium">
-                            {item.label}
-                          </span>
-                          {item.hasSubmenu &&
-                            (expandedMenu === item.label ? (
-                              <ChevronDown
-                                size={16}
-                                className="transition-transform"
-                              />
-                            ) : (
-                              <ChevronRight
-                                size={16}
-                                className="transition-transform"
-                              />
-                            ))}
-                        </>
-                      )}
-                    </a>
+              {menuItems.map((item) => {
+                const active = isMenuItemActive(item);
+                return (
+                  <li key={item.label}>
+                    <div>
+                      <a
+                        href={item.href}
+                        className={`flex items-center gap-3 px-3 py-2.5 
+                          rounded-lg transition-all group
+                          ${isCollapsed ? "justify-center" : ""}
+                          ${
+                            active
+                              ? "bg-dark-hover text-white"
+                              : "text-white/80 hover:text-white hover:bg-dark-hover"
+                          }`}
+                        onClick={(e) => {
+                          if (item.hasSubmenu && !isCollapsed) {
+                            e.preventDefault();
+                            toggleSubmenu(item.label);
+                          }
+                        }}
+                        title={isCollapsed ? item.label : ""}
+                      >
+                        <item.icon size={20} className="flex-shrink-0" />
+                        {!isCollapsed && (
+                          <>
+                            <span className="flex-1 text-sm font-medium">
+                              {item.label}
+                            </span>
+                            {item.hasSubmenu &&
+                              (expandedMenu === item.label ? (
+                                <ChevronDown
+                                  size={16}
+                                  className="transition-transform"
+                                />
+                              ) : (
+                                <ChevronRight
+                                  size={16}
+                                  className="transition-transform"
+                                />
+                              ))}
+                          </>
+                        )}
+                      </a>
 
-                    {/* Submenu */}
-                    {item.hasSubmenu &&
-                      !isCollapsed &&
-                      expandedMenu === item.label && (
-                        <ul className="mt-2 ml-9 space-y-1">
-                          {item.submenu?.map((subitem) => (
-                            <li key={subitem.label}>
-                              <a
-                                href={subitem.href}
-                                className="block px-3 py-2 text-sm text-white/60 hover:text-white hover:bg-dark-hover/50 rounded-lg transition-all"
-                              >
-                                {subitem.label}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                  </div>
-                </li>
-              ))}
+                      {/* Submenu */}
+                      {item.hasSubmenu &&
+                        !isCollapsed &&
+                        expandedMenu === item.label && (
+                          <ul className="mt-2 ml-9 space-y-1">
+                            {item.submenu?.map((subitem) => {
+                              const subActive = isSubmenuItemActive(subitem);
+                              return (
+                                <li key={subitem.label}>
+                                  <a
+                                    href={subitem.href}
+                                    className={[
+                                      "block px-3 py-2 text-sm rounded-lg transition-all",
+                                      subActive
+                                        ? "bg-dark-hover/80 text-white"
+                                        : "text-white/60 hover:text-white hover:bg-dark-hover/50",
+                                    ].join(" ")}
+                                  >
+                                    {subitem.label}
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
@@ -197,8 +240,8 @@ export default function AdminSidebarLayout({
             >
               <div className="w-10 h-10 bg-ourgreen rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-dark font-semibold text-sm">
-                  {profile?.nama_lengkap
-                    ? profile.nama_lengkap
+                  {session?.user?.name
+                    ? session?.user?.name
                         .split(" ")
                         .map((word) => word[0])
                         .join("")
@@ -209,7 +252,7 @@ export default function AdminSidebarLayout({
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">
-                    {profile?.nama_lengkap}
+                    {session?.user?.name}
                   </p>
                   <p className="text-xs text-white/60 truncate">
                     Administrator
