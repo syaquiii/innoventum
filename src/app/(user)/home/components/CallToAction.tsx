@@ -1,13 +1,14 @@
 "use client"
 import Image from "next/image";
 import { langList } from "../data/langlist";
+import { Button } from "@/components/ui/button";
 
 const CallToAction = () => {
   return (
     <div
       className="bg-white"
     >
-      <div className="mycontainer p-40 flex flex-col gap-40">
+      <div className="mycontainer p-40 flex flex-col gap-30">
         <div className="justify-center">
           <h2 className="font-bold text-6xl text-end">
             Be part of <span className="text-normal">innovation</span>.
@@ -16,7 +17,7 @@ const CallToAction = () => {
             Join <span className="text-normal">Innoventum</span> now!
           </h2>
         </div>
-        <div className="space-y-5">
+        <div className="space-y-5 flex flex-col items-center">
           <h2 className="font-bold text-6xl text-center">
             Langganan
           </h2>
@@ -37,6 +38,9 @@ const CallToAction = () => {
             
           </div>
         </div>
+        <Button variant="normal" className="scale-140 mx-95 cursor-pointer hover:scale-150">
+          Langganan Sekarang
+        </Button>
 
       </div>
 
