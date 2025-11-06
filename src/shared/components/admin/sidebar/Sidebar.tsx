@@ -14,7 +14,10 @@ import {
   LogOut,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
-
+import Image from "next/image";
+import Logo from "@/shared/assets/logo/logo-putih.png";
+import icon from "@/app/favicon.ico";
+import { useAuth } from "@/shared/hooks/useAuth";
 interface AdminSidebarLayoutProps {
   children: ReactNode;
 }
@@ -22,6 +25,7 @@ interface AdminSidebarLayoutProps {
 export default function AdminSidebarLayout({
   children,
 }: AdminSidebarLayoutProps) {
+  const { profile } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const handleLogout = () => {
@@ -88,18 +92,18 @@ export default function AdminSidebarLayout({
           <div className="flex items-center justify-between h-16 px-4 border-b border-white/10">
             {!isCollapsed && (
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-ourgreen rounded-lg flex items-center justify-center">
-                  <span className="text-dark font-bold text-xl">I</span>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <Image alt="Icon" src={icon} />
                 </div>
-                <span className="text-white font-semibold text-lg">
-                  Innoventum
-                </span>
+                <div className="flex items-center">
+                  <Image alt="Logo" src={Logo} className="w-52" />
+                </div>
               </div>
             )}
             {isCollapsed && (
               <div className="w-full flex justify-center">
-                <div className="w-10 h-10 bg-ourgreen rounded-lg flex items-center justify-center">
-                  <span className="text-dark font-bold text-xl">I</span>
+                <div className="w-10 h-10  rounded-lg flex items-center justify-center">
+                  <Image alt="Icon" src={icon} />
                 </div>
               </div>
             )}
@@ -192,12 +196,20 @@ export default function AdminSidebarLayout({
               }`}
             >
               <div className="w-10 h-10 bg-ourgreen rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-dark font-semibold text-sm">AD</span>
+                <span className="text-dark font-semibold text-sm">
+                  {profile?.nama_lengkap
+                    ? profile.nama_lengkap
+                        .split(" ")
+                        .map((word) => word[0])
+                        .join("")
+                        .toUpperCase()
+                    : ""}
+                </span>
               </div>
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">
-                    Admin
+                    {profile?.nama_lengkap}
                   </p>
                   <p className="text-xs text-white/60 truncate">
                     Administrator

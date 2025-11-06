@@ -4,7 +4,7 @@ import Logo from "@/shared/assets/logo/logo.png";
 
 const Footer = () => {
   return (
-    <footer className="w-screen h-[20rem] overflow-hidden  bg-light">
+    <footer className="w-screen h-[20rem] overflow-hidden bg-light">
       <div className="mycontainer h-full w-full  flex justify-between items-center ">
         <div className="">
           <Image className="" alt="" src={Logo} />
