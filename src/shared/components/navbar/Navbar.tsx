@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/shared/hooks/useAuth";
 import ProfileDropdown from "./ProfileDropdown";
+import Image from "next/image";
+import logo from "@/shared/assets/logo/logo.png";
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -42,7 +44,7 @@ const Navbar = () => {
       <div className="bg-light px-20 text-xl font-semibold font-poppins py-6 my-6 rounded-2xl shadow-xl">
         <ul className="flex justify-between items-center">
           <div className="transition-transform hover:scale-110 duration-200 cursor-pointer">
-            Ini Logo
+            <Image src={logo} alt="" className="w-40  " />
           </div>
           {navList.map((item) => (
             <li key={item.id}>
