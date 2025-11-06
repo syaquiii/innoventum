@@ -44,13 +44,7 @@ export default function AdminSidebarLayout({
       icon: BookOpen,
       label: "Kursus",
       href: "/admin/kursus",
-      hasSubmenu: true,
-      submenu: [
-        { label: "Semua Kursus", href: "/admin/kursus" },
-        { label: "Tambah Kursus", href: "/admin/kursus/tambah" },
-        { label: "Materi", href: "/admin/materi" },
-        { label: "Enrollment", href: "/admin/enrollment" },
-      ],
+      hasSubmenu: false,
     },
     {
       icon: GraduationCap,
@@ -62,7 +56,7 @@ export default function AdminSidebarLayout({
       icon: MessageSquare,
       label: "Forum",
       href: "/admin/forum",
-      hasSubmenu: true,
+      hasSubmenu: false,
       submenu: [
         { label: "Thread", href: "/admin/forum/thread" },
         { label: "Komentar", href: "/admin/forum/komentar" },
@@ -72,18 +66,6 @@ export default function AdminSidebarLayout({
       icon: Briefcase,
       label: "Proyek Bisnis",
       href: "/admin/proyek",
-      hasSubmenu: false,
-    },
-    {
-      icon: BarChart3,
-      label: "Laporan",
-      href: "/admin/laporan",
-      hasSubmenu: false,
-    },
-    {
-      icon: Settings,
-      label: "Pengaturan",
-      href: "/admin/pengaturan",
       hasSubmenu: false,
     },
   ];
