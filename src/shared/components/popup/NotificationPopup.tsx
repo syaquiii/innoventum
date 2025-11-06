@@ -1,20 +1,22 @@
 "use client";
 
 import React, { useEffect, useRef, useCallback } from "react";
-import { X, AlertCircle, CheckCircle } from "lucide-react";
+// --- TAMBAHAN: Import ikon 'Info' ---
+import { X, AlertCircle, CheckCircle, Info } from "lucide-react";
 
 interface PopupProps {
   message?: string;
   onClose?: () => void;
   duration?: number;
-  variant?: "success" | "error";
+  // --- TAMBAHAN: Menambahkan 'info' sebagai opsi variant ---
+  variant?: "success" | "error" | "info";
 }
 
 export function Popup({
   message,
   onClose,
   duration = 5000,
-  variant = "error",
+  variant = "error", // Default tetap error
 }: PopupProps) {
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isExiting, setIsExiting] = React.useState(false);
@@ -27,6 +29,9 @@ export function Popup({
   }, [onClose]);
 
   useEffect(() => {
+    // Reset exiting state if message changes (e.g., new popup replaces old one)
+    setIsExiting(false);
+
     if (duration && message) {
       timeoutRef.current = setTimeout(() => {
         handleClose();
@@ -62,9 +67,21 @@ export function Popup({
       progressGradient: "from-green-400 to-green-500",
       Icon: CheckCircle,
     },
+    // --- TAMBAHAN: Konfigurasi untuk variant 'info' ---
+    info: {
+      border: "border-blue-200",
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-500",
+      title: "Informasi",
+      titleColor: "text-blue-900",
+      progressGradient: "from-blue-400 to-blue-500",
+      Icon: Info,
+    },
+    // ------------------------------------------------
   };
 
-  const config = variants[variant];
+  // Pilih config, jika variant tidak ada, fallback ke 'error'
+  const config = variants[variant] || variants.error;
 
   return (
     <>
@@ -90,7 +107,7 @@ export function Popup({
         }
       `}</style>
 
-      <div className="fixed top-4 right-4 z-99999 pointer-events-none">
+      <div className="fixed top-4 right-4 z-[99999] pointer-events-none">
         <div
           className={`pointer-events-auto w-80 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-sm border ${
             config.border
