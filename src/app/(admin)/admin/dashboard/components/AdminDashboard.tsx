@@ -313,7 +313,9 @@ export default function AdminDashboard({
               <TrendingUp className="w-5 h-5 text-emerald-500" />
               Aktivitas Terbaru
             </h2>
-            <div className="space-y-3">
+
+            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+              {" "}
               {activities.recentEnrollments.map((enrollment) => (
                 <div
                   key={enrollment.id}

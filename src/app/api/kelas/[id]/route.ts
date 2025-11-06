@@ -318,7 +318,7 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     if (!mahasiswa) {
       return NextResponse.json(
-        { error: "Data mahasiswa tidak ditemukan" },
+        { error: "Profilmu belum lengkap, tolong lengkapi profile mu!" },
         { status: 404 }
       );
     }
