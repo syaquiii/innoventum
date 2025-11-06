@@ -22,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} font-poppins  antialiased`}>
+      <body
+        className={`${poppins.variable} font-poppins overflow-x-hidden  antialiased`}
+      >
         <Providers>
           <AuthProvider>{children}</AuthProvider>
         </Providers>
