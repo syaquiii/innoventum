@@ -199,6 +199,7 @@ export default function KelasDetailPage() {
           <div className="space-y-4">
             <img
               className="rounded-lg bg-gray-700 h-64 w-full object-cover"
+              src={kelas.thumbnail || ""}
               alt={kelas.judul}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;

@@ -66,15 +66,14 @@ const KelasCard: React.FC<KelasCardProps> = ({
 
   return (
     <Link href={`/kelas/${id}`}>
-      <div className="bg-light p-4 rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer group">
+      <div className="bg-light p-4  min-h-[30rem] rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer group">
         {/* Thumbnail */}
-        <div className="relative h-48 bg-gray-700 rounded-md">
+        <div className="relative h-56 overflow-hidden bg-gray-700 rounded-md">
           {thumbnail ? (
-            <Image
+            <img
               src={thumbnail}
               alt={judul}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover  group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
