@@ -1,4 +1,3 @@
-// components/admin/AdminDashboard.tsx
 "use client";
 
 import { DashboardData } from "../hooks/useDashboard";
@@ -16,6 +15,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  AreaChart, // Impor AreaChart
+  Area, // Impor Area
 } from "recharts";
 import {
   Users,
@@ -41,6 +42,21 @@ const COLORS = {
   warning: ["#F59E0B", "#FBBF24", "#FCD34D", "#FDE68A"],
   purple: ["#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE"],
   accent: ["#c7ff9f", "#b3e68a", "#9fcc75", "#8bb360"],
+};
+
+// Komponen kustom untuk Tooltip
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-gray-800/90 p-3 rounded-lg shadow-lg border border-gray-700 backdrop-blur-sm">
+        <p className="text-sm text-gray-400 mb-1">{`Bulan: ${label}`}</p>
+        <p className="text-base font-bold text-white">
+          {`Jumlah: ${payload[0].value} enrollment`}
+        </p>
+      </div>
+    );
+  }
+  return null;
 };
 
 export default function AdminDashboard({
@@ -141,35 +157,84 @@ export default function AdminDashboard({
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Enrollment Trend */}
+          {/* Enrollment Trend (UPDATED) */}
           <div className="bg-dark rounded-xl shadow-lg p-6 border border-gray-800">
             <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-normal" />
               Tren Enrollment
             </h2>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={charts.enrollmentTrend}>
+              {/* Mengganti LineChart dengan AreaChart */}
+              <AreaChart
+                data={charts.enrollmentTrend}
+                margin={{
+                  top: 10,
+                  right: 30,
+                  left: 0,
+                  bottom: 0,
+                }}
+              >
+                {/* Menambahkan definisi gradient untuk isian area */}
+                <defs>
+                  <linearGradient
+                    id="colorEnrollment"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor={COLORS.primary[0]}
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={COLORS.primary[0]}
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="month" stroke="#9ca3af" />
-                <YAxis stroke="#9ca3af" />
+                <XAxis dataKey="month" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1f4f97",
-                    border: "1px solid #374151",
-                    borderRadius: "8px",
-                    color: "#fff",
+                  // Menggunakan komponen tooltip kustom
+                  content={<CustomTooltip />}
+                  // Mengubah kursor menjadi solid
+                  cursor={{
+                    stroke: COLORS.primary[1],
+                    strokeWidth: 1,
+                    opacity: 0.5,
                   }}
                 />
-                <Legend wrapperStyle={{ color: "#9ca3af" }} />
+
+                {/* Komponen Area untuk isian gradient */}
+                <Area
+                  type="monotone"
+                  dataKey="count"
+                  stroke="none" // Garis akan digambar oleh komponen Line terpisah
+                  fill="url(#colorEnrollment)" // Menggunakan gradient
+                  name="Jumlah Enrollment"
+                />
+                {/* Komponen Line untuk garis di atas area */}
                 <Line
                   type="monotone"
                   dataKey="count"
-                  stroke="#3484fb"
+                  stroke={COLORS.primary[0]} // Warna garis
                   strokeWidth={3}
-                  dot={{ fill: "#3484fb", r: 5 }}
+                  dot={false} // Sembunyikan titik default
+                  activeDot={{
+                    // Atur titik yang muncul saat hover (sedikit lebih besar)
+                    r: 8,
+                    stroke: "#fff",
+                    strokeWidth: 2,
+                    fill: COLORS.primary[0],
+                  }}
                   name="Jumlah Enrollment"
                 />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
 
@@ -196,22 +261,22 @@ export default function AdminDashboard({
                     return `${level}: ${(percentNumber * 100).toFixed(0)}%`;
                   }}
                   outerRadius={100}
-                  fill="#8884d8"
+                  fill="#8B5CF6" // Changed color from #8884d8 to a different one (from purple palette)
                   dataKey="count"
                 >
                   {charts.kursusPerLevel.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={COLORS.success[index % COLORS.success.length]}
+                      fill={COLORS.purple[index % COLORS.purple.length]} // Changed to use purple color set
                     />
                   ))}
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1f4f97",
-                    border: "1px solid #374151",
+                    backgroundColor: "#a5b4fc", // lighter purple (from tailwind 'indigo-300')
+                    border: "1px solid #ddd6fe", // lighter purple border for contrast
                     borderRadius: "8px",
-                    color: "#fff",
+                    color: "#1e293b", // darker text for more contrast
                   }}
                 />
               </PieChart>
@@ -224,7 +289,9 @@ export default function AdminDashboard({
               Top 5 Kursus Populer
             </h2>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={charts.topKursus} layout="horizontal">
+              <BarChart data={charts.topKursus} layout="vertical">
+                {" "}
+                {/* Mengubah layout ke vertical */}
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis type="number" stroke="#9ca3af" />
                 <YAxis
@@ -233,16 +300,21 @@ export default function AdminDashboard({
                   width={150}
                   stroke="#9ca3af"
                   tick={{ fontSize: 12 }}
+                  dx={-5} // Sedikit menggeser label Y
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1f4f97",
+                    backgroundColor: "#1f2937", // bg-gray-800
                     border: "1px solid #374151",
                     borderRadius: "8px",
                     color: "#fff",
                   }}
                 />
-                <Bar dataKey="enrollments" fill="#8B5CF6" name="Enrollments" />
+                <Bar
+                  dataKey="enrollments"
+                  fill={COLORS.purple[0]}
+                  name="Enrollments"
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -260,13 +332,17 @@ export default function AdminDashboard({
                 <YAxis stroke="#9ca3af" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1f4f97",
+                    backgroundColor: "#1f2937", // bg-gray-800
                     border: "1px solid #374151",
                     borderRadius: "8px",
                     color: "#fff",
                   }}
                 />
-                <Bar dataKey="count" fill="#F59E0B" name="Jumlah Proyek" />
+                <Bar
+                  dataKey="count"
+                  fill={COLORS.warning[0]}
+                  name="Jumlah Proyek"
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
