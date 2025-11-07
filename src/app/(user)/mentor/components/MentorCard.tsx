@@ -22,7 +22,7 @@ export const MentorCard = ({ mentor, onViewDetails }: MentorCardProps) => {
         <div className="flex-shrink-0">
           <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-700">
             {mentor.foto ? (
-              <Image
+              <img
                 src={mentor.foto}
                 alt={mentor.nama}
                 width={128}
