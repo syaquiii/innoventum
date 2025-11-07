@@ -11,7 +11,7 @@ export const MentorCard = ({ mentor, onViewDetails }: MentorCardProps) => {
   const keahlianList = mentor.keahlian.split(",").map((k) => k.trim());
 
   return (
-    <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-lg p-6 text-white relative overflow-hidden">
+    <div className="flex flex-col h-full bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-lg p-6 text-white relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 text-8xl font-bold text-indigo-800/20 select-none">
         ONBOARD MENTOR START
@@ -39,8 +39,8 @@ export const MentorCard = ({ mentor, onViewDetails }: MentorCardProps) => {
 
         {/* Content */}
         <div className="flex-1">
-          <h2 className="text-3xl font-bold mb-3">{mentor.nama}</h2>
-          <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+          <h2 className="text-3xl font-bold mb-3 line-clamp-1">{mentor.nama}</h2>
+          <p className="text-sm text-gray-300 mb-4 leading-relaxed line-clamp-3">
             {mentor.bio}
           </p>
           <button

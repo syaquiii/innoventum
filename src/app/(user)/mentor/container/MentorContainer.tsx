@@ -56,17 +56,6 @@ export default function MentorPage() {
     setSearchQuery("");
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Memuat data mentor...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -147,13 +136,28 @@ export default function MentorPage() {
 
           {/* Loading State */}
           {isLoading && (
-            <div className="space-y-6">
-              {[1, 2, 3].map((i) => (
+            <div className="grid grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="bg-gray-800 rounded-lg overflow-hidden animate-pulse"
+                  className="rounded-lg overflow-hidden animate-pulse"
                 >
-                  <div className="h-64 bg-gray-700"></div>
+                  <div className="h-93 bg-gray-700 p-6 space-y-8">
+                    <div className="flex gap-6">
+                      <div className="shrink-0">
+                        <div className="bg-gray-500 rounded-full w-32 h-32" />
+                      </div>
+                      <div className="space-y-5 w-full h-full">
+                        <div className="bg-gray-500 w-full h-9 rounded-lg"></div>
+                        <div className="bg-gray-500 w-full h-15 rounded-lg"></div>
+                        <div className="bg-gray-500 w-58 h-9 rounded-2xl"></div>
+                      </div>
+                    </div>
+                    <div className="flex gap-6 w-full h-30">
+                      <div className="bg-gray-500 w-full h-full rounded-lg"></div>
+                      <div className="bg-gray-500 w-full h-full rounded-lg"></div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -214,7 +218,7 @@ export default function MentorPage() {
             !error &&
             filteredMentors &&
             filteredMentors.length > 0 && (
-              <div className="space-y-6 grid grid-cols-2">
+              <div className="gap-4 grid grid-cols-2 items-stretch">
                 {filteredMentors.map((mentor) => (
                   <Link
                     key={mentor.mentor_id}
