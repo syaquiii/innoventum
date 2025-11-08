@@ -68,7 +68,7 @@ export default function MentorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen -mb-10 bg-dark">
       <section className="mycontainer flex gap-10 text-light py-40 w-full">
         {/* Sidebar Filter - 2/12 */}
         <div className="w-2/12">
@@ -128,25 +128,20 @@ export default function MentorPage() {
         <div className="w-10/12">
           {/* Loading State */}
           {isLoading && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-4 gap-4 ">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
                   className="rounded-lg overflow-hidden animate-pulse"
                 >
-                  <div className="h-93 bg-gray-700 p-6 space-y-8">
-                    <div className="flex gap-6">
+                  <div className="h-108 bg-gray-700 p-6 space-y-7">
+                    <div className="flex gap-6 justify-center">
                       <div className="shrink-0">
-                        <div className="bg-gray-500 rounded-full w-32 h-32" />
-                      </div>
-                      <div className="space-y-5 w-full h-full">
-                        <div className="bg-gray-500 w-full h-9 rounded-lg"></div>
-                        <div className="bg-gray-500 w-full h-15 rounded-lg"></div>
-                        <div className="bg-gray-500 w-58 h-9 rounded-2xl"></div>
+                        <div className="bg-gray-500 rounded-full w-50 aspect-square" />
                       </div>
                     </div>
-                    <div className="flex gap-6 w-full h-30">
-                      <div className="bg-gray-500 w-full h-full rounded-lg"></div>
+                    <div className="w-full h-40 flex flex-col gap-5">
+                      <div className="bg-gray-500 w-full h-16 rounded-lg"></div>
                       <div className="bg-gray-500 w-full h-full rounded-lg"></div>
                     </div>
                   </div>
@@ -210,13 +205,13 @@ export default function MentorPage() {
             !error &&
             filteredMentors &&
             filteredMentors.length > 0 && (
-              <div className="gap-4 grid grid-cols-4 items-stretch">
-                {filteredMentors.map((mentor) => (
-                  <Link
-                    key={mentor.mentor_id}
-                    href={`/mentor/${mentor.mentor_id}`}
-                    className="block"
-                  >
+                <div className="grid grid-cols-4 gap-4 items-stretch [&:has(a:hover)_a:not(:hover)]:blur-sm">
+                  {filteredMentors.map((mentor) => (
+                    <Link
+                      key={mentor.mentor_id}
+                      href={`/mentor/${mentor.mentor_id}`}
+                      className="block transition-all duration-300 hover:scale-105"
+                    >
                     <MentorCard
                       key={mentor.mentor_id}
                       mentor={mentor}
