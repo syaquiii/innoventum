@@ -126,14 +126,6 @@ export default function MentorPage() {
 
         {/* Main Content - 10/12 */}
         <div className="w-10/12">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Hubungi Mentor</h1>
-            <p className="text-gray-400">
-              Temukan mentor terbaik untuk membimbing perjalanan bisnis Anda
-            </p>
-          </div>
-
           {/* Loading State */}
           {isLoading && (
             <div className="grid grid-cols-2 gap-4">
@@ -218,7 +210,7 @@ export default function MentorPage() {
             !error &&
             filteredMentors &&
             filteredMentors.length > 0 && (
-              <div className="gap-4 grid grid-cols-2 items-stretch">
+              <div className="gap-4 grid grid-cols-4 items-stretch">
                 {filteredMentors.map((mentor) => (
                   <Link
                     key={mentor.mentor_id}

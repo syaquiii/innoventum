@@ -6,6 +6,7 @@ import { useMentor } from "../../hooks/useMentor";
 import { MentorDetailView } from "../components/MentorDetailView";
 import { Popup } from "@/shared/components/popup/NotificationPopup";
 import { useState } from "react";
+import { MentorDetailLanding } from "../components/MentorDetailLanding";
 
 interface MentorDetailContainerProps {
   mentorId: number;
@@ -98,17 +99,22 @@ export function MentorDetailContainer({
   }
 
   return (
-    <>
-      <Popup
-        message={popup?.message}
-        variant={popup?.variant}
-        onClose={() => setPopup(null)}
+    <main>
+      <MentorDetailLanding 
+      mentor={mentor}
       />
-      <MentorDetailView
-        mentor={mentor}
-        onBack={handleBack}
-        onContact={handleContactMentor}
-      />
-    </>
+      <>
+        <Popup
+          message={popup?.message}
+          variant={popup?.variant}
+          onClose={() => setPopup(null)}
+        />
+        <MentorDetailView
+          mentor={mentor}
+          onBack={handleBack}
+          onContact={handleContactMentor}
+        />
+      </>
+    </main>
   );
 }
