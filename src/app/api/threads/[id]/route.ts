@@ -73,7 +73,7 @@ export async function GET(
 // PATCH - Update thread
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -85,7 +85,10 @@ export async function PATCH(
       );
     }
 
-    const threadId = parseInt(params.id);
+    // Await params untuk Next.js 15
+    const { id } = await params;
+    const threadId = parseInt(id);
+
     const body = await req.json();
     const { judul, isi } = body;
 
@@ -147,7 +150,7 @@ export async function PATCH(
 // DELETE - Hapus thread
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -159,7 +162,9 @@ export async function DELETE(
       );
     }
 
-    const threadId = parseInt(params.id);
+    // Await params untuk Next.js 15
+    const { id } = await params;
+    const threadId = parseInt(id);
 
     // Cek kepemilikan thread
     const thread = await prisma.thread.findUnique({
