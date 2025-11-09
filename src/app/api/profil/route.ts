@@ -1,65 +1,151 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // <-- 1. Gunakan prisma singleton
+import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { profileSchema } from "./zod/profile";
 import { authOptions } from "@/lib/auth";
 
-// Hapus: import { PrismaClient } from "@prisma/client";
-// Hapus: const prisma = new PrismaClient();
-
-// Ini adalah implementasi backend untuk UC-IN-07
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  try {
+    const session = await getServerSession(authOptions);
 
-  // 2. Tipe 'session' sekarang sudah benar berkat 'next-auth.d.ts'
-  // Kita bisa langsung cek 'session.user.id' tanpa 'any'
-  if (!session?.user?.id) {
-    return NextResponse.json(
-      { error: "Tidak terautentikasi" },
-      { status: 401 }
-    );
-  }
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Tidak terautentikasi" },
+        { status: 401 }
+      );
+    }
 
-  // 3. 'userId' sekarang type-safe (string)
-  const userId = session.user.id;
+    const userId = parseInt(session.user.id);
 
-  // Ambil data profil lengkap
-  const profil = await prisma.pengguna.findUnique({
-    where: { user_id: parseInt(userId) }, // Tetap parse ke Int untuk query DB
-    include: {
-      mahasiswa: {
-        include: {
-          _count: {
-            // Rekap aktivitas seperti di Main Flow 3
-            select: { enrollments: true, threads: true },
+    // Ambil data profil lengkap dengan statistik aktivitas
+    const profil = await prisma.pengguna.findUnique({
+      where: { user_id: userId },
+      include: {
+        mahasiswa: {
+          include: {
+            // Hitung jumlah aktivitas
+            _count: {
+              select: {
+                threads: true,
+                komentar: true,
+                proyekBisnis: true,
+                enrollments: true,
+              },
+            },
+            // Ambil threads terbaru (5 terakhir)
+            threads: {
+              take: 5,
+              orderBy: { thread_id: "desc" }, // Karena tidak ada created_at
+              select: {
+                thread_id: true,
+                judul: true,
+                isi: true,
+                jumlah_views: true,
+                jumlah_komentar: true,
+                _count: {
+                  select: { komentar: true },
+                },
+              },
+            },
+            // Ambil komentar terbaru (5 terakhir)
+            komentar: {
+              take: 5,
+              orderBy: { tanggal_dibuat: "desc" },
+              select: {
+                komentar_id: true,
+                isi_komentar: true,
+                tanggal_dibuat: true,
+                thread: {
+                  select: {
+                    judul: true,
+                  },
+                },
+              },
+            },
+            // Ambil proyek bisnis
+            proyekBisnis: {
+              orderBy: { proyek_id: "desc" }, // Karena tidak ada created_at
+              select: {
+                proyek_id: true,
+                nama_proyek: true,
+                deskripsi: true,
+                status_proyek: true,
+                dokumen: true,
+              },
+            },
+            // Ambil enrollments (kursus yang diikuti)
+            enrollments: {
+              orderBy: { tanggal_mulai: "desc" },
+              select: {
+                enrollment_id: true,
+                tanggal_mulai: true,
+                tanggal_selesai: true,
+                status: true,
+                progres_persen: true,
+                kursus: {
+                  select: {
+                    kursus_id: true,
+                    judul: true,
+                    deskripsi: true,
+                    kategori: true,
+                    level: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
-      // Bisa juga include admin jika perlu
-    },
-  });
+    });
 
-  if (!profil) {
+    if (!profil) {
+      return NextResponse.json(
+        { error: "Profil tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    // Format response dengan statistik
+    const response = {
+      ...profil,
+      statistik: profil.mahasiswa
+        ? {
+            total_threads: profil.mahasiswa._count.threads,
+            total_komentar: profil.mahasiswa._count.komentar,
+            total_proyek: profil.mahasiswa._count.proyekBisnis,
+            total_courses: profil.mahasiswa._count.enrollments,
+          }
+        : null,
+    };
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
+
     return NextResponse.json(
-      { error: "Profil tidak ditemukan" },
-      { status: 404 }
+      {
+        error: "Gagal mengambil data profil",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json(profil);
 }
+
 export async function PATCH(req: Request) {
   try {
-    // 1. Cek Sesi Autentikasi
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userId = parseInt(session.user.id);
-
-    // 2. Validasi body (mengharapkan data nested)
     const body = await req.json();
     const validation = profileSchema.safeParse(body);
 
@@ -70,19 +156,10 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // ============= INI PERBAIKANNYA =============
-    // Destructure data nested dengan benar
-    const {
-      nama_lengkap,
-      tanggal_lahir,
-      nomor_telepon,
-      mahasiswa, // <-- Ambil objek 'mahasiswa'
-    } = validation.data;
-    // ============================================
+    const { nama_lengkap, tanggal_lahir, nomor_telepon, mahasiswa } =
+      validation.data;
 
-    // 3. Gunakan Transaksi Prisma
     const [updatedPengguna, updatedMahasiswa] = await prisma.$transaction([
-      // Operasi 1: Update tabel Pengguna
       prisma.pengguna.update({
         where: { user_id: userId },
         data: {
@@ -91,37 +168,27 @@ export async function PATCH(req: Request) {
           nomor_telepon,
         },
       }),
-
-      // Operasi 2: Upsert tabel Mahasiswa
       prisma.mahasiswa.upsert({
-        where: {
-          user_id: userId,
-        },
-        // ============= DAN INI PERBAIKANNYA =============
+        where: { user_id: userId },
         update: {
-          // Gunakan properti dari objek 'mahasiswa'
           nim: mahasiswa.nim,
           institusi: mahasiswa.institusi,
           program_studi: mahasiswa.program_studi,
         },
         create: {
           user_id: userId,
-          // Gunakan properti dari objek 'mahasiswa'
           nim: mahasiswa.nim,
           institusi: mahasiswa.institusi,
           program_studi: mahasiswa.program_studi,
         },
-        // ================================================
       }),
     ]);
 
-    // 4. Kirim Respon Sukses
     return NextResponse.json({
       ...updatedPengguna,
       mahasiswa: updatedMahasiswa,
     });
   } catch (error) {
-    // 5. Tangani Error
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
         return NextResponse.json(

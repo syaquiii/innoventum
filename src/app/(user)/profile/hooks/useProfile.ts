@@ -1,8 +1,11 @@
 // hooks/useProfile.ts
 "use client";
 
+import {
+  ProfileFormData,
+  ProfileWithMahasiswa,
+} from "@/app/api/profil/model/profile";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProfileFormData, ProfileWithMahasiswa } from "../models/types";
 
 // Fungsi helper untuk fetcher
 async function fetchProfile(): Promise<ProfileWithMahasiswa> {
