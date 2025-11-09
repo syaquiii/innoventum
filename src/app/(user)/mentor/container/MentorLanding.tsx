@@ -6,7 +6,7 @@ const MentorLanding = () => {
       className="relative h-screen w-full bg-cover bg-bottom bg-no-repeat"
       style={{ backgroundImage: `url(${bg.src})` }}
       >
-      <div className="h-full w-screen bg-linear-to-t from-dark to-dark/0">
+      <div className="h-screen w-screen bg-linear-to-t from-dark to-dark/0">
         <div className="mycontainer flex items-center h-full text-white">
           <div>
             <h1 className="font-bold text-8xl">
