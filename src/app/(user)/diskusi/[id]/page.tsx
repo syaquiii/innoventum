@@ -10,6 +10,7 @@ import { id } from "date-fns/locale";
 import { useThread } from "../hooks/useThreads";
 import CommentForm from "../components/CommentForm";
 import CommentItem from "../components/CommentItem";
+import ThreadCard from "../components/ThreadCard";
 
 interface ThreadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -61,8 +62,7 @@ export default function ThreadDetailPage({ params }: ThreadDetailPageProps) {
         </Link>
 
         {/* Thread Content */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          {/* Thread Header */}
+        {/* <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           <div className="flex gap-4 mb-6">
             <div className="flex-shrink-0">
               {thread.mahasiswa.foto_profil ? (
@@ -98,15 +98,18 @@ export default function ThreadDetailPage({ params }: ThreadDetailPageProps) {
             </div>
           </div>
 
-          {/* Thread Body */}
           <div className="prose max-w-none">
             <p className="text-gray-700 whitespace-pre-wrap">{thread.isi}</p>
           </div>
+
+        </div> */}
+        <div className="space-y-4 mb-6">
+            <ThreadCard key={thread.thread_id} thread={thread} />
         </div>
 
         {/* Comments Section */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">
+        <div className="bg-linear-to-br from-indigo-900 to-indigo-950 text-light rounded-lg border border-gray-200 p-6">
+          <h2 className="text-xl font-bold mb-6">
             Komentar ({thread.komentar?.length || 0})
           </h2>
 
@@ -117,7 +120,7 @@ export default function ThreadDetailPage({ params }: ThreadDetailPageProps) {
             </div>
           ) : (
             <div className="mb-8 p-4 bg-gray-50 rounded-lg text-center">
-              <p className="text-gray-600">
+              <p>
                 Silakan{" "}
                 <Link href="/login" className="text-blue-600 hover:underline">
                   login

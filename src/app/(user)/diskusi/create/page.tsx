@@ -49,7 +49,7 @@ export default function CreateThreadPage() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="rounded-lg border overflow-hidden border-gray-200">
           <CreateThreadForm />
         </div>
       </div>

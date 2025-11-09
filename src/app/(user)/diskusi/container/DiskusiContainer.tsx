@@ -73,9 +73,11 @@ export default function DiskusiContainer() {
           </div>
         ) : (
           <>
-            <div className="space-y-4 mb-8">
+            <div className="space-y-4 mb-8 [&:has(a:hover)_a:not(:hover)]:blur-sm transition-all">
               {data?.data.map((thread) => (
-                <ThreadCard key={thread.thread_id} thread={thread} />
+                <div key={thread.thread_id} className="hover:scale-105 transition-all hover:shadow-md">
+                  <ThreadCard thread={thread}  />
+                </div>
               ))}
             </div>
 
