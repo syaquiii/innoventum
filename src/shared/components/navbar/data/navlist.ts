@@ -22,6 +22,6 @@ export const navList = [
   {
     id: "projek",
     label: "Projek",
-    href: "/projek",
+    href: "/proyek",
   },
 ];
