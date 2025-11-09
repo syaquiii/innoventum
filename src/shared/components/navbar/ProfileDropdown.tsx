@@ -39,9 +39,17 @@ const ProfileDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="transition-all duration-300 hover:scale-105 hover:shadow-lg bg-normal text-white hover:bg-normal-hover rounded-full w-12 h-12 p-0 border-0 font-semibold text-sm">
-          {getInitials()}
-        </Button>
+        {session?.user?.image ? (
+          <img
+            src={session.user.image}
+            alt="Profile"
+            className="transition-all duration-300 hover:scale-105 hover:shadow-lg bg-normal rounded-full w-12 h-12 p-0 border-0 object-cover"
+          />
+        ) : (
+          <div className="transition-all duration-300 hover:scale-105 hover:shadow-lg bg-normal text-white hover:bg-normal-hover rounded-full w-12 h-12 flex items-center justify-center font-semibold text-sm">
+            {getInitials()}
+          </div>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 rounded-xl">
         <DropdownMenuLabel>
