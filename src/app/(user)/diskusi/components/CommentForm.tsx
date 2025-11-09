@@ -33,7 +33,7 @@ export default function CommentForm({ threadId }: CommentFormProps) {
       <div>
         <label
           htmlFor="komentar"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-light mb-2"
         >
           Tambah Komentar
         </label>
@@ -43,7 +43,7 @@ export default function CommentForm({ threadId }: CommentFormProps) {
           onChange={(e) => setIsiKomentar(e.target.value)}
           placeholder="Tulis komentar Anda..."
           rows={4}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="placeholder:text-light/60 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           required
         />
       </div>
@@ -52,7 +52,7 @@ export default function CommentForm({ threadId }: CommentFormProps) {
         <button
           type="submit"
           disabled={createComment.isPending || !isiKomentar.trim()}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {createComment.isPending ? "Mengirim..." : "Kirim Komentar"}
         </button>

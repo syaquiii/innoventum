@@ -75,7 +75,9 @@ export default function DiskusiContainer() {
           <>
             <div className="space-y-4 mb-8 ">
               {data?.data.map((thread) => (
-                <ThreadCard key={thread.thread_id} thread={thread} />
+                <div key={thread.thread_id} className="hover:scale-105 transition-all hover:shadow-md">
+                  <ThreadCard thread={thread}  />
+                </div>
               ))}
             </div>
 

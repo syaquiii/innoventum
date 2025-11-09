@@ -63,7 +63,7 @@ export default function CommentItem({
   };
 
   return (
-    <div className="flex gap-4 p-4 bg-gray-50 rounded-lg">
+    <div className="flex gap-4 p-4 bg-linear-to-br from-indigo-900 to-indigo-950 border-light border text-light rounded-lg">
       {/* Avatar */}
       <div className="flex-shrink-0">
         {comment.mahasiswa.foto_profil ? (
@@ -73,7 +73,7 @@ export default function CommentItem({
             className="w-10 h-10 rounded-full object-cover"
           />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-light flex items-center justify-center">
             <User className="w-5 h-5 text-gray-500" />
           </div>
         )}
@@ -83,10 +83,10 @@ export default function CommentItem({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <p className="font-medium text-gray-900">
+            <p className="font-medium">
               {comment.mahasiswa.pengguna.nama_lengkap}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-white/60">
               {formatDistanceToNow(new Date(comment.tanggal_dibuat), {
                 addSuffix: true,
                 locale: id,
@@ -96,16 +96,16 @@ export default function CommentItem({
 
           {/* Actions */}
           {isOwner && !isEditing && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 text-light">
               <button
                 onClick={() => setIsEditing(true)}
-                className="p-1 text-gray-500 hover:text-blue-600"
+                className="p-1 hover:text-blue-400"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={handleDelete}
-                className="p-1 text-gray-500 hover:text-red-600"
+                className="p-1 hover:text-red-400"
                 disabled={deleteComment.isPending}
               >
                 <Trash2 className="w-4 h-4" />
@@ -127,7 +127,7 @@ export default function CommentItem({
               <button
                 onClick={handleUpdate}
                 disabled={updateComment.isPending || !editedText.trim()}
-                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
+                className="px-3 py-1 bg-blue-600 text-light text-sm rounded hover:bg-blue-700 disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
               </button>
@@ -136,14 +136,14 @@ export default function CommentItem({
                   setIsEditing(false);
                   setEditedText(comment.isi_komentar);
                 }}
-                className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+                className="px-3 py-1 bg-red-500 text-sm rounded hover:bg-red-700"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
         ) : (
-          <p className="text-gray-700 whitespace-pre-wrap">
+          <p className="whitespace-pre-wrap">
             {comment.isi_komentar}
           </p>
         )}

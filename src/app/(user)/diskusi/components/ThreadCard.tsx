@@ -23,11 +23,11 @@ export default function ThreadCard({ thread }: ThreadCardProps) {
   return (
     <Link
       href={`/diskusi/${thread.thread_id}`}
-      className="block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all"
+      className="block px-8 py-4 bg-linear-to-br from-indigo-900 to-indigo-950 rounded-lg text-light border border-light"
     >
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-4">
         {/* Avatar */}
-        <div className="flex-shrink-0">
+        <div className=" flex gap-4 flex-shrink-0 items-center">
           {thread.mahasiswa.foto_profil ? (
             <img
               src={thread.mahasiswa.foto_profil}
@@ -39,32 +39,27 @@ export default function ThreadCard({ thread }: ThreadCardProps) {
               <User className="w-6 h-6 text-blue-600" />
             </div>
           )}
+          <h3 className="text-xl font-bold line-clamp-2">
+            {thread.mahasiswa.pengguna.nama_lengkap}
+          </h3>
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-            {thread.judul}
-          </h3>
 
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+          <p className=" text-base mb-6 line-clamp-2">
             {thread.isi}
           </p>
 
           {/* Meta Info */}
-          <div className="flex items-center gap-4 text-sm text-gray-500">
-            <span className="font-medium text-gray-700">
-              {thread.mahasiswa.pengguna.nama_lengkap}
-            </span>
-
-            <div className="flex items-center gap-1">
-              <Eye className="w-4 h-4" />
-              <span>{thread.jumlah_views}</span>
-            </div>
-
-            <div className="flex items-center gap-1">
+          <div className="flex items-center gap-8 text-base">
+            <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               <span>{thread.jumlah_komentar}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              <span>{thread.jumlah_views}</span>
             </div>
           </div>
         </div>

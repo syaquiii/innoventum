@@ -37,11 +37,11 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-linear-to-br p-6 from-indigo-900 to-indigo-950 text-light">
       <div>
         <label
           htmlFor="judul"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium mb-2"
         >
           Judul Thread
         </label>
@@ -51,7 +51,7 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
           value={judul}
           onChange={(e) => setJudul(e.target.value)}
           placeholder="Masukkan judul thread..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-light/60"
           required
           maxLength={200}
         />
@@ -60,7 +60,7 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
       <div>
         <label
           htmlFor="isi"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium mb-2"
         >
           Isi Thread
         </label>
@@ -70,7 +70,7 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
           onChange={(e) => setIsi(e.target.value)}
           placeholder="Tulis pertanyaan atau diskusi Anda..."
           rows={8}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none placeholder:text-light/60"
           required
         />
       </div>
@@ -82,7 +82,7 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
             setJudul("");
             setIsi("");
           }}
-          className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+          className="px-4 py-2 border border-light rounded-lg hover:bg-red-500 transition-all"
           disabled={createThread.isPending}
         >
           Reset
@@ -90,7 +90,7 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
         <button
           type="submit"
           disabled={createThread.isPending || !judul.trim() || !isi.trim()}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {createThread.isPending ? "Memposting..." : "Posting Thread"}
         </button>
