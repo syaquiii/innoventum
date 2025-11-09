@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import { ProfileFormData, ProfileFormProps } from "../models/types";
+import { ProfileFormData } from "@/app/api/profil/model/profile";
 import { profileSchema } from "@/app/api/profil/zod/profile";
+import { ProfileFormProps } from "../models/types";
 
 export default function ProfileForm({
   profile,

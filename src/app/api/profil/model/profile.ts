@@ -1,3 +1,4 @@
+// /app/api/profil/model/profile.ts
 import { Prisma } from "@prisma/client";
 import {
   ProfileFormData,
@@ -5,7 +6,7 @@ import {
 } from "@/app/api/profil/zod/profile";
 
 // Tipe data dari Prisma - sesuaikan dengan query API Anda
-export const profileWithMahasiswa =
+export const profileWithMahasiswaValidator =
   Prisma.validator<Prisma.PenggunaDefaultArgs>()({
     include: {
       mahasiswa: {
@@ -75,12 +76,11 @@ export const profileWithMahasiswa =
   });
 
 // Tipe dasar dari Prisma
-export type ProfileWithMahasiswaBase = Prisma.PenggunaGetPayload<
-  typeof profileWithMahasiswa
+type ProfileWithMahasiswaBase = Prisma.PenggunaGetPayload<
+  typeof profileWithMahasiswaValidator
 >;
 
 // Extend dengan statistik yang ditambahkan di API route
-
 export type ProfileWithMahasiswa = ProfileWithMahasiswaBase & {
   statistik?: {
     total_threads: number;
@@ -101,10 +101,9 @@ export interface ProfileSectionProps {
 export interface ProfileFormProps {
   profile: ProfileWithMahasiswa | null | undefined;
   onCancel: () => void;
-  // onSave menerima tipe OUTPUT (Date)
   onSave: (data: ProfileFormData) => void;
   isSaving: boolean;
 }
 
-// Ekspor ulang tipe form agar komponen lain bisa impor dari satu tempat
+// Ekspor ulang tipe form
 export type { ProfileFormData, ProfileFormInput };
