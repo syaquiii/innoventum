@@ -26,9 +26,9 @@ export default function DiskusiContainer() {
     <section className="bg-dark">
       <div className="mycontainer py-40">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center  text- justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-light">Forum Diskusi</h1>
+            <h1 className="text-3xl font-bold  text-light">Forum Diskusi</h1>
             <p className="text-light mt-2">
               Diskusikan ide dan tanyakan pertanyaan Anda
             </p>
@@ -73,7 +73,7 @@ export default function DiskusiContainer() {
           </div>
         ) : (
           <>
-            <div className="space-y-4 mb-8">
+            <div className="space-y-4 mb-8 ">
               {data?.data.map((thread) => (
                 <ThreadCard key={thread.thread_id} thread={thread} />
               ))}
