@@ -5,11 +5,16 @@ import { useState } from "react";
 import { useMentor, useMentors } from "../hooks/useMentor";
 import { MentorCard } from "../components/MentorCard";
 import Link from "next/link";
+import { useAuth } from "@/shared/hooks/useAuth";
+
 export default function MentorPage() {
   const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
   const [selectedKeahlian, setSelectedKeahlian] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Get auth status
+  const { status } = useAuth();
 
   const { data: mentors, isLoading, error } = useMentors();
   const { data: selectedMentor } = useMentor(selectedMentorId || 0);
@@ -56,9 +61,60 @@ export default function MentorPage() {
     setSearchQuery("");
   };
 
+  // Jika belum login, tampilkan pesan untuk login
+  if (status === "unauthenticated") {
+    return (
+      <div className="min-h-screen bg-dark">
+        <section className="mycontainer flex items-center justify-center text-light py-40">
+          <div className="bg-gray-800 rounded-lg p-12 text-center max-w-md">
+            <svg
+              className="w-16 h-16 text-blue-600 mx-auto mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Login Diperlukan
+            </h3>
+            <p className="text-gray-400 mb-6">
+              Anda harus login terlebih dahulu untuk melihat daftar mentor
+            </p>
+            <Link
+              href="/login"
+              className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+            >
+              Login Sekarang
+            </Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // Jika sedang loading auth
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-dark">
+        <section className="mycontainer flex items-center justify-center text-light py-40">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-400">Memeriksa status login...</p>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-dark flex items-center justify-center">
         <div className="text-center text-red-600">
           <p className="text-xl font-semibold mb-2">Gagal memuat data mentor</p>
           <p className="text-sm">Silakan refresh halaman</p>
@@ -67,6 +123,7 @@ export default function MentorPage() {
     );
   }
 
+  // Jika sudah authenticated, tampilkan daftar mentor
   return (
     <div className="min-h-screen -mb-10 bg-dark">
       <section className="mycontainer flex gap-10 text-light py-40 w-full">
@@ -205,13 +262,13 @@ export default function MentorPage() {
             !error &&
             filteredMentors &&
             filteredMentors.length > 0 && (
-                <div className="grid grid-cols-4 gap-4 items-stretch [&:has(a:hover)_a:not(:hover)]:blur-sm">
-                  {filteredMentors.map((mentor) => (
-                    <Link
-                      key={mentor.mentor_id}
-                      href={`/mentor/${mentor.mentor_id}`}
-                      className="block transition-all duration-300 hover:scale-105"
-                    >
+              <div className="grid grid-cols-4 gap-4 items-stretch [&:has(a:hover)_a:not(:hover)]:blur-sm">
+                {filteredMentors.map((mentor) => (
+                  <Link
+                    key={mentor.mentor_id}
+                    href={`/mentor/${mentor.mentor_id}`}
+                    className="block transition-all duration-300 hover:scale-105"
+                  >
                     <MentorCard
                       key={mentor.mentor_id}
                       mentor={mentor}
