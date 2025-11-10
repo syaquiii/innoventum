@@ -3,6 +3,9 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
+import Image from "next/image";
+import handshake from "@/shared/assets/kelas/Handshake.png";
+import Link from "next/link";
 
 // Gunakan any untuk prop type, biarkan Prisma handle type inference
 interface ProfileActivityDetailsProps {
@@ -133,60 +136,69 @@ export default function ProfileActivityDetails({
 
       {/* Courses yang Diikuti */}
       {enrollments.length > 0 && (
-        <div className="bg-white rounded-lg border shadow-sm p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
+        <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-lg border shadow-sm p-6">
+          <h3 className="text-xl font-bold text-light mb-4">
             Kursus yang Diikuti
           </h3>
           <div className="space-y-3">
             {enrollments.map((enrollment: any) => (
-              <div
+              <Link
+                href={`/kelas/${enrollment.kursus.kursus_id}`}
                 key={enrollment.enrollment_id}
-                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-gray-800">
-                    {enrollment.kursus.judul}
-                  </h4>
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      enrollment.status === "completed"
-                        ? "bg-green-100 text-green-700"
-                        : enrollment.status === "ongoing"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {enrollment.status}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                  {enrollment.kursus.deskripsi}
-                </p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded">
-                      {enrollment.kursus.kategori}
-                    </span>
-                    <span className="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded capitalize">
-                      {enrollment.kursus.level}
+                <div className="p-4 border border-light bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-lg hover:bg-gray-100 transition-colors flex gap-6">
+                  <img
+                    src={enrollment.kursus.thumbnail}
+                    alt=""
+                    className="w-48 aspect-video rounded-lg shadow-sm border"
+                  />
+                  <div className="flex flex-col w-full">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-light">
+                        {enrollment.kursus.judul}
+                      </h4>
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          enrollment.status === "completed"
+                            ? "bg-green-100 text-green-700"
+                            : enrollment.status === "ongoing"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {enrollment.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-light mb-2 line-clamp-2">
+                      {enrollment.kursus.deskripsi}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded">
+                          {enrollment.kursus.kategori}
+                        </span>
+                        <span className="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded capitalize">
+                          {enrollment.kursus.level}
+                        </span>
+                      </div>
+                      <span className="text-xs font-semibold text-light/70">
+                        {Number(enrollment.progres_persen).toFixed(0)}% selesai
+                      </span>
+                    </div>
+                    <span className="text-xs text-light/70 mt-2 block">
+                      Mulai:{" "}
+                      {new Date(enrollment.tanggal_mulai).toLocaleDateString(
+                        "id-ID",
+                        {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        }
+                      )}
                     </span>
                   </div>
-                  <span className="text-xs font-semibold text-gray-700">
-                    {Number(enrollment.progres_persen).toFixed(0)}% selesai
-                  </span>
                 </div>
-                <span className="text-xs text-gray-500 mt-2 block">
-                  Mulai:{" "}
-                  {new Date(enrollment.tanggal_mulai).toLocaleDateString(
-                    "id-ID",
-                    {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }
-                  )}
-                </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -194,21 +206,21 @@ export default function ProfileActivityDetails({
 
       {/* Komentar Terbaru */}
       {komentar.length > 0 && (
-        <div className="bg-white rounded-lg border shadow-sm p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
+        <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-lg border shadow-sm p-6">
+          <h3 className="text-xl font-bold text-light mb-4">
             Komentar Terbaru
           </h3>
           <div className="space-y-3">
             {komentar.map((comment: any) => (
               <div
                 key={comment.komentar_id}
-                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-4 bg-gradient-to-br from-indigo-900 to-indigo-950 border rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <p className="text-sm text-gray-700 mb-2 line-clamp-2">
+                <p className="text-sm text-light mb-2 line-clamp-2">
                   {comment.isi_komentar}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600 line-clamp-1">
+                  <span className="text-xs text-light/70 line-clamp-1">
                     Pada: {comment.thread.judul}
                   </span>
                   <span className="text-xs text-gray-500 whitespace-nowrap ml-2">

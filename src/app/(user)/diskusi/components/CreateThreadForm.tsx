@@ -10,7 +10,7 @@ interface CreateThreadFormProps {
 }
 
 export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
-  const [judul, setJudul] = useState("");
+  const [judul, setJudul] = useState("aa");
   const [isi, setIsi] = useState("");
   const router = useRouter();
 
@@ -37,8 +37,11 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-linear-to-br p-6 from-indigo-900 to-indigo-950 text-light">
-      <div>
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 bg-linear-to-br p-6 from-indigo-900 to-indigo-950 text-light"
+    >
+      {/* <div>
         <label
           htmlFor="judul"
           className="block text-sm font-medium mb-2"
@@ -55,13 +58,10 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
           required
           maxLength={200}
         />
-      </div>
+      </div> */}
 
       <div>
-        <label
-          htmlFor="isi"
-          className="block text-sm font-medium mb-2"
-        >
+        <label htmlFor="isi" className="block text-sm font-medium mb-2">
           Isi Thread
         </label>
         <textarea
