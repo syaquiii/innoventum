@@ -2,12 +2,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import KelasCard from "./KelasCard";
 import { useKelas } from "../hooks/useKelas";
+import { useAuth } from "@/shared/hooks/useAuth";
 
 const MainSection = () => {
   const [selectedKategori, setSelectedKategori] = useState<string>("");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
+
+  // Get auth status
+  const { status } = useAuth();
 
   const {
     data: kelasList,
@@ -34,6 +39,58 @@ const MainSection = () => {
     { value: "advanced", label: "Lanjutan" },
   ];
 
+  // Jika belum login, tampilkan pesan untuk login
+  if (status === "unauthenticated") {
+    return (
+      <div className="min-h-screen bg-dark">
+        <section className="mycontainer flex items-center justify-center text-light py-20">
+          <div className="bg-gray-800 rounded-lg p-12 text-center max-w-md">
+            <svg
+              className="w-16 h-16 text-blue-600 mx-auto mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Login Diperlukan
+            </h3>
+            <p className="text-gray-400 mb-6">
+              Anda harus login terlebih dahulu untuk melihat katalog kelas
+            </p>
+            <Link
+              href="/login"
+              className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+            >
+              Login Sekarang
+            </Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // Jika sedang loading auth
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-dark">
+        <section className="mycontainer flex items-center justify-center text-light py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-400">Memeriksa status login...</p>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // Jika sudah authenticated, tampilkan katalog kelas
   return (
     <div className="min-h-screen bg-dark">
       <section className="mycontainer flex gap-10 text-light py-20 w-full">

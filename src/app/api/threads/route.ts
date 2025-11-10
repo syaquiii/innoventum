@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
             include: {
               pengguna: {
                 select: {
+                  image: true,
                   nama_lengkap: true,
                   email: true,
                 },
@@ -104,6 +105,7 @@ export async function POST(req: NextRequest) {
     const thread = await prisma.thread.create({
       data: {
         mahasiswa_id: mahasiswa.mahasiswa_id,
+
         judul,
         isi,
       },
@@ -114,6 +116,7 @@ export async function POST(req: NextRequest) {
               select: {
                 nama_lengkap: true,
                 email: true,
+                image: true,
               },
             },
           },
