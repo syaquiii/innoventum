@@ -90,6 +90,7 @@ export async function GET() {
                     deskripsi: true,
                     kategori: true,
                     level: true,
+                    thumbnail: true,
                   },
                 },
               },
