@@ -41,24 +41,7 @@ export default function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
       onSubmit={handleSubmit}
       className="space-y-4 bg-linear-to-br p-6 from-indigo-900 to-indigo-950 text-light"
     >
-      {/* <div>
-        <label
-          htmlFor="judul"
-          className="block text-sm font-medium mb-2"
-        >
-          Judul Thread
-        </label>
-        <input
-          type="text"
-          id="judul"
-          value={judul}
-          onChange={(e) => setJudul(e.target.value)}
-          placeholder="Masukkan judul thread..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-light/60"
-          required
-          maxLength={200}
-        />
-      </div> */}
+   
 
       <div>
         <label htmlFor="isi" className="block text-sm font-medium mb-2">
