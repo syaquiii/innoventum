@@ -64,7 +64,7 @@ export function useRegister() {
   };
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/dasbor" });
+    signIn("google", { callbackUrl: "/home" });
   };
 
   return {

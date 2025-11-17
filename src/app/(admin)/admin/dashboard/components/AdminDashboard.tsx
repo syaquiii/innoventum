@@ -356,7 +356,7 @@ export default function AdminDashboard({
               <Eye className="w-5 h-5 text-normal" />
               Thread Terpopuler
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-4 h-[20rem] overflow-y-scroll">
               {activities.topThreads.map((thread, index) => (
                 <div
                   key={index}
@@ -390,7 +390,7 @@ export default function AdminDashboard({
               Aktivitas Terbaru
             </h2>
 
-            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+            <div className="space-y-3 h-[20rem] overflow-y-auto pr-1">
               {" "}
               {activities.recentEnrollments.map((enrollment) => (
                 <div

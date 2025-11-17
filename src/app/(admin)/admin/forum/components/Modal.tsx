@@ -184,7 +184,7 @@ export default function ThreadDetailModal({
 
             <Separator />
 
-            {/* Comment Form */}
+            {/* Comment Form
             <div className="p-6 pt-4">
               <form onSubmit={handleSubmitKomentar} className="space-y-4">
                 <div className="space-y-2">
@@ -221,7 +221,7 @@ export default function ThreadDetailModal({
                   </Button>
                 </div>
               </form>
-            </div>
+            </div> */}
           </>
         ) : (
           <div className="p-6 text-center text-muted-foreground">

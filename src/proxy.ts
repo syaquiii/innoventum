@@ -26,7 +26,7 @@ export async function proxy(req: NextRequest) {
 
   // --- 2. Rute yang harus diproteksi (tidak boleh diakses jika belum login) ---
   const protectedAdminRoutes = ["/admin"];
-  const protectedMahasiswaRoutes = ["/dasbor", "/profil"];
+  const protectedMahasiswaRoutes = ["/profil"];
 
   if (!token) {
     const isAccessingAdminRoute = protectedAdminRoutes.some((route) =>
