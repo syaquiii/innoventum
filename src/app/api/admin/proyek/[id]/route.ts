@@ -65,7 +65,7 @@ export async function GET(
 // PUT update proyek by ID
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -74,7 +74,8 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const proyekId = parseInt(params.id);
+    const { id } = await params;
+    const proyekId = parseInt(id);
 
     if (isNaN(proyekId)) {
       return NextResponse.json(
@@ -156,7 +157,7 @@ export async function PUT(
 // DELETE proyek by ID
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -165,7 +166,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const proyekId = parseInt(params.id);
+    const { id } = await params;
+    const proyekId = parseInt(id);
 
     if (isNaN(proyekId)) {
       return NextResponse.json(
