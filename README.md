@@ -2,6 +2,11 @@
 
 **Kelompok 8**
 
+
+**LINK DEPLOYMENT**
+https://innoventum-eta.vercel.app/
+
+
 ## Anggota Kelompok
 
 - Farrel Radya Putra - NIM. 245150407111089 - FRP
